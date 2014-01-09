@@ -504,7 +504,7 @@ this.reVisOne = function()
 	mySidebar.innerHTML += "<br>Max size: <input type=\"number\"" + 
 			 " id=\"maxSize\" min=\"0\" max=\"100\" value=\"30\" onkeypress=\"return myGo.isNumber(event)\" onchange=myGo.redrawScreen()></input>" +
 			 "<br>Min size: <input type=\"number\"" + 
-			 " id=\"minSize\" min=\"0\" max=\"100\"  value=\"1\" onkeypress=\"return myGo.isNumber(event)\" onchange=myGo.redrawScreen()></input>"   + 
+			 " id=\"minSize\" min=\"0\" max=\"100\"  value=\"2\" onkeypress=\"return myGo.isNumber(event)\" onchange=myGo.redrawScreen()></input>"   + 
 	"<br><input type=\"checkbox\"" + 
 			"id=\"logSize\" onchange=myGo.redrawScreen()>log</input>"
 			+"<input type=\"checkbox\"" + 

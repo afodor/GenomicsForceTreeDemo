@@ -6,16 +6,16 @@
 </style>
 </head>
 	<body>
-		<h3>Draggable force tree for genomics data.</h3>
+		<h3>Draggable force tree for genomics data (Chrome browsers only).</h3>
 		<!--<br><a href=ForceTree.html?FileToOpen=testOperon.json>force tree with  rna-seq data</a>-->
 		<!--<br><a href=ForceTree.html?FileToOpen=aTree2.json>force tree with gastro 16S data</a>-->
 		<br><a href=ForceTree.html?FileToOpen=ismeJRDP_CaseControl.json>force tree with ISME-J 16S data</a>
-		
+		<h2>Introduction</h2>
 		<p>Genomics and bioinformatics data often are generated at many hierarchical levels.  
-		For example, an <a href=>”http:// http://rdp.cme.msu.edu/ “</a>  classification of a 16S rRNA experiment yields 
+		For example, an <a href="http://rdp.cme.msu.edu/">RPD</a> 11classification of a 16S rRNA experiment yields 
 		calls to phylum, class, order, family and then genus with each level nested within the one above it.  
 		So a phylum can have many classes, which in turn can have many orders and so forth.  
-		For an rna-seq experiment on a bacteria, reads can be mapped to genes, which in turn can be grouped into 
+		For an rna-seq experiment on abacteria, reads can be mapped to genes, which in turn can be grouped into 
 		operons, with one to many genes per operon.  In performing inference, it is not trivial to interpret these 
 		multiple levels.  Typically, levels are chosen ahead of time and infernence is constrained to that level.  
 		For example, it is common to perform RDP analyses at the genus or phyla level.  
@@ -40,7 +40,24 @@
 		each circle is the number of sequences assigned to each node:
 		<br>
 		<center><img id="anImage1"  
-		 height=400 width=400 align=middle src="treeShowingPhylogeneticLevels.jpg"></center>
+		 height=400 width=400 align=middle src="treeShowingPhylogeneticLevels.jpg"></img></center>
+		
+		<p>If in the <a href=ForceTree.html?FileToOpen=ismeJRDP_CaseControl.json>demonstration</a> we hover the mouse over each of 
+		the large dots at the phylum level, we see that the three mostabundant taxa in our samples were Phylum Firmicutes (with 
+		340,933 sequences), Phylum Bacteroidetes (with 142,231 sequences)and Phylum Proteobacteria (with 67,926 sequences) as
+		we might expect from a human gut micro-environment.
+		
+		<p>One of the nice things about the demonstration is that we can switch between a traditional circular 
+		phylogenetic tree (as in the Figure above) and a Force Tree view.  We can do this by clicking on
+		the "reanimate" button in the left hand control panel.   When we do this, the view switches to a view in
+		which opposing forces position each node.  These forces include "gravity" which tends to pull each node
+		to the center of the screen, a repulsive focce between each node and an elastic spring-like force that 
+		in this case reflects the phyologentic distance between different taxonomic levels (so for example the
+		distance between genus and family will be shorter than the distance between genus and order):
+		
+		<center><img id="anImage1"  
+		 height=400 width=400 align=middle src="treeShowingForceView.jpg"></img></center>
+		
 		
 		
 	</body>
