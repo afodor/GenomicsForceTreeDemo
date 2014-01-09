@@ -1661,6 +1661,8 @@ this.initialize = function () {
    
    if( graphType == "ForceTree" )
 	   this.arrangeForcePlot(false)
+	   
+   this.redrawScreen();
 }
 
 this.getQuantiativeColor= function (d)
