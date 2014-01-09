@@ -1,12 +1,18 @@
 <html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<link type="text/css" rel="stylesheet" href="style.css" />
+<style type="text/css">
+</style>
+</head>
 	<body>
 		<h3>Draggable force tree for genomics data.</h3>
-		<br><a href=ForceTree.html?FileToOpen=testOperon.json>force tree with  rna-seq data</a>
-		<br><a href=ForceTree.html?FileToOpen=aTree2.json>force tree with gastro 16S data</a>
+		<!--<br><a href=ForceTree.html?FileToOpen=testOperon.json>force tree with  rna-seq data</a>-->
+		<!--<br><a href=ForceTree.html?FileToOpen=aTree2.json>force tree with gastro 16S data</a>-->
 		<br><a href=ForceTree.html?FileToOpen=ismeJRDP_CaseControl.json>force tree with ISME-J 16S data</a>
 		
 		<p>Genomics and bioinformatics data often are generated at many hierarchical levels.  
-		For example, an <a href=>îhttp:// http://rdp.cme.msu.edu/ ì</a>  classification of a 16S rRNA experiment yields 
+		For example, an <a href=>‚Äùhttp:// http://rdp.cme.msu.edu/ ‚Äú</a>  classification of a 16S rRNA experiment yields 
 		calls to phylum, class, order, family and then genus with each level nested within the one above it.  
 		So a phylum can have many classes, which in turn can have many orders and so forth.  
 		For an rna-seq experiment on a bacteria, reads can be mapped to genes, which in turn can be grouped into 
@@ -15,7 +21,7 @@
 		For example, it is common to perform RDP analyses at the genus or phyla level.  
 		But such a-priori filtering of the data may miss important patterns; for example, for some taxa 
 		a difference at the genus level might be important, while for other taxa in the same experiment, a 
-		meaningful signal wonít be observed unless a less derived phylogenetic level is considered.  
+		meaningful signal won‚Äôt be observed unless a less derived phylogenetic level is considered.  
 
 		<p>In order to visualize such cases, this web page contains a demonstration project for visualization of 
 		phylogenetic trees.  In this <a href=ForceTree.html?FileToOpen=ismeJRDP_CaseControl.json> example</a> 
@@ -31,7 +37,11 @@
 		
 		The visualization <a href=ForceTree.html?FileToOpen=ismeJRDP_CaseControl.json>shown here</a> (for Chrome 
 		browsers only) shows the phylogenetic tree that results from this analysis.  By default, the size of
-		each circle is the number of sequences assigned to each node.  
+		each circle is the number of sequences assigned to each node:
+		<br>
+		<center><img id="anImage1"  
+		 height=400 width=400 align=middle src="treeShowingPhylogeneticLevels.jpg"></center>
+		
 		
 	</body>
 </html>
