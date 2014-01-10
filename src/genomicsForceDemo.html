@@ -6,11 +6,11 @@
 </style>
 </head>
 	<body>
-		<h3>Draggable force tree for genomics data (Chrome browsers only).</h3>
+		<h1>Draggable force tree for genomics data (Chrome browsers only).</h1>
 		<!--<br><a href=ForceTree.html?FileToOpen=testOperon.json>force tree with  rna-seq data</a>-->
 		<!--<br><a href=ForceTree.html?FileToOpen=aTree2.json>force tree with gastro 16S data</a>-->
 		<br><a href=ForceTree.html?FileToOpen=ismeJRDP_CaseControl.json>force tree with ISME-J 16S data</a>
-		<h2>Introduction</h2>
+		<h3>Introduction</h3>
 		<p>Genomics and bioinformatics data often are generated at many hierarchical levels.  
 		For example, an <a href="http://rdp.cme.msu.edu/">RPD</a> 11classification of a 16S rRNA experiment yields 
 		calls to phylum, class, order, family and then genus with each level nested within the one above it.  
@@ -19,11 +19,11 @@
 		operons, with one to many genes per operon.  In performing inference, it is not trivial to interpret these 
 		multiple levels.  Typically, levels are chosen ahead of time and infernence is constrained to that level.  
 		For example, it is common to perform RDP analyses at the genus or phyla level.  
-		But such a-priori filtering of the data may miss important patterns; for example, for some taxa 
+		But such a priori filtering of the data may miss important patterns; for example, for some taxa 
 		a difference at the genus level might be important, while for other taxa in the same experiment, a 
 		meaningful signal won’t be observed unless a less derived phylogenetic level is considered.  
 		
-		<h2>Visualizing inference in a way that is hierarchically sensitive to taxonomy</h2>
+		<h3>Visualizing inference in a way that is hierarchically sensitive to taxonomy</h3>
 
 		<p>In order to visualize such cases, this web page contains a demonstration project for visualization of 
 		phylogenetic trees.  In this <a href=ForceTree.html?FileToOpen=ismeJRDP_CaseControl.json> example</a> 
@@ -42,7 +42,7 @@
 		each circle is the number of sequences assigned to each node:
 		<br>
 		<center><img id="anImage1"  
-		 height=400 width=400 align=middle src="treeShowingPhylogeneticLevels.jpg"></img></center>
+		 height=400 width=432 align=middle src="treeShowingPhylogeneticLevels.jpg"></img></center>
 		
 		<p>If in the <a href=ForceTree.html?FileToOpen=ismeJRDP_CaseControl.json>demonstration</a> we hover the mouse over each of 
 		the large dots at the phylum level, we see that the three most abundant phyla in our samples were Phylum Firmicutes (with 
@@ -73,9 +73,12 @@
 		<center><img id="anImage1"  
 		 height=400 width=650 align=middle src="proteobacteriaSeparate.jpg"></img></center>
 		
-		<p>(Hitting the "V" button repeatedly allows us to toggle between only showing the last selected).
+		<p>This allows us to break out sub-taxa that we are interesed in for a more detailed inspection than is possible
+		when the taxa is constrained by all of the other taxa in the tree.<br>
+		(Hitting the "V" button repeatedly allows us to toggle between only showing the last selected).
 		
-		<p>We can continue to break down our phylogenetic tree, for example here we have created a third level
+		<p>We can use the interface to continue to break down our phylogenetic tree to any desired level of 
+		 phylogenetic resolution. For example here we have created a third level
 		for Gammaproteobacteria (by dragging the "Gammaproteobacteria" node to where we want it and again hitting "A")
 		<center><img id="anImage1"  
 		 height=400 width=650 align=middle src="threeLevels.jpg"></img></center>
@@ -89,7 +92,16 @@
 		 height=400 width=650 align=middle src="threeLevelsInfernce.jpg"></img></center>
 		
 		<p> This allows us to visualize inference information in a way that is hierarchcially sensitive to 
-		taxonomic information.  
+		taxonomic information.  This is a rich visualization that will reveal patterns that may not be obvious when
+		 considering taxomomic and inferential relationships separately.
+		 
+		 <h3>Selecting subsets of multi-dimensional datasets in a hierarchically aware matter</h3>
+		 <p> Although (obviously) still under development, the demonstration has some rudimentary ability to 
+		 	visualize data in a 2-dimensional scatter plot space and relate that visualization to the hierarchical 
+		 	space.  In the following, we show the relationship between the -logPValue (for the null hypothesis that 
+		 	that the distribution of each taxa is the same in case and control) and the fraction of sequences for each
+		 	taxa that were assigned to case:
+		 	
 		
 	</body>
 </html>
