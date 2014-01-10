@@ -877,7 +877,7 @@ this.getAVal = function (d, xAxis)
 	{	
 		var aRange = statics.getRanges()[chosen];
 		var aScale = d3.scale.linear().domain(aRange).
-			range([0, xAxis ? w : h]).clamp(true);
+			range([0, xAxis ? w : h]);
 		return aScale(d[chosen]);
 	}
 	else
@@ -901,7 +901,7 @@ this.addAxis = function(chosen, isXAxis)
 		{
 				var aRange = statics.getRanges()[chosen];
 		var aScale = d3.scale.linear().domain(aRange).
-					range([0, w]).clamp(true);
+					range([0, w]);
 		var xAxis = d3.svg.axis()
                   .scale(aScale)
                   .orient( "bottom");
@@ -911,7 +911,7 @@ this.addAxis = function(chosen, isXAxis)
 		{
 		var aRange = statics.getRanges()[chosen];
 		var aScale = d3.scale.linear().domain(aRange).
-					range([0, h]).clamp(true);
+					range([0, h]);
 		var yAxis = d3.svg.axis()
                   .scale(aScale)
                   .orient( "right");
