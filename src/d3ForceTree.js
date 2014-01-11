@@ -306,14 +306,13 @@ this.reforce = function()
     .linkDistance(function(d) { return d.target._children ? 80 * (d.nodeDepth-16)/16 : 30; })
     .size([w, h - 60]).gravity(aDocument.getElementById("gravitySlider").value/100)
     
-    drag = force.drag().on("dragstart", function(d) { 
+    drag = force.drag().on("dragend", function(d) { 
     						
     						// disable drag and zoom for graph events for force tree view
     						// since it is not working very well (very jumpy)
     						if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
     						{
-    							d3.event.sourceEvent.stopPropagation();
-        						d.fixed=true; 
+    							d.fixed=true; 
         						d.userMoved = true;
         						thisContext.update();
     						}
