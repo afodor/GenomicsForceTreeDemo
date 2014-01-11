@@ -1051,8 +1051,6 @@ this.handleKeyboardEvent = function(e)
         }
         else if( String.fromCharCode(charCode) == "R" || String.fromCharCode(charCode) == 'r')
         {
-        	
-        	
         	if( thisContext.getParentDocument().getElementById("showRightDataPanel").checked )
         	{
         		thisContext.getParentDocument().getElementById("showRightDataPanel").checked =false;
@@ -1810,10 +1808,11 @@ this.highlightAllChildren = function (d)
 	if( d== null)
 		return;
 
+	d.doNotShow = false;
+	
 	if( ! d.children || d.children == null)
 		return;	
 
-	d.doNotShow = false;
 	for( var x=0; x < d.children.length; x++) 
 	{
 		this.highlightAllChildren(d.children[x]);
