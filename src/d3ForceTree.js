@@ -1607,15 +1607,15 @@ this.arrangeForcePlot = function(arrangeChildren)
 	if( ! root || ! arrangeChildren)
 	{
 		root = statics.getRoot();
-		root.x =  w / 2.0  + 20;
+		root.x =  w / 2.0  + 20.0;
 		root.y = h /2.0;
 	}
 	
-	var radius = Math.min(w,h)/2;
+	var radius = parseFloat( Math.min(w,h))/2.0;
 	
-	radius = radius - radius * aDocument.getElementById("gravitySlider").value/100;
+	radius = radius - radius * parseFloat(aDocument.getElementById("gravitySlider").value)/100.0;
 
-	var localMinLevel = 0;
+	var localMinLevel = 0.0;
 	
 	if(  arrangeChildren &&  lastSelected)
 	{
@@ -1623,15 +1623,16 @@ this.arrangeForcePlot = function(arrangeChildren)
 		localMinLevel = lastSelected.nodeDepth;
 	}
 	
+	localMinLevel = parseFloat(localMinLevel);
 		
-	var piTwice= 2* Math.PI ;
+	var piTwice= 2.0* Math.PI ;
 	
-	var range = statics.getMaxLevel() - localMinLevel
+	var range = parseFloat( statics.getMaxLevel() - localMinLevel)
 	for( var x=0; x < nodesToRun.length; x++) if( nodesToRun[x].doNotShow==false ) 
 	{
 		nodesToRun[x].fixed=false;
 		nodesToRun[x].userMoved = false;
-		var aPosition = numAssignedArray[nodesToRun[x].nodeDepth]
+		var aPosition = parseFloat(numAssignedArray[nodesToRun[x].nodeDepth])
 				/numVisibleArray[nodesToRun[x].nodeDepth];
 		
 		var aRad = (parseFloat(nodesToRun[x].nodeDepth)- localMinLevel)/range * radius;
