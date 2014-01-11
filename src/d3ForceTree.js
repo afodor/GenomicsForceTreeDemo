@@ -1566,6 +1566,13 @@ this.arrangeForcePlot = function(arrangeChildren)
 		numAssignedArray.push(0);
 	}
 	
+	var localMaxLevel = statics.getMaxLevel()
+	
+	if( arrangeChildren && lastSelected )
+	{
+		localMaxLevel =0;
+	}
+	
 	var nodesToRun = nodes;
 	
 	if( arrangeChildren && lastSelected )
@@ -1575,6 +1582,7 @@ this.arrangeForcePlot = function(arrangeChildren)
 		function addNodeAndChildren(aNode)
 		{
 			nodesToRun.push(aNode);
+			localMaxLevel = Math.max(aNode.nodeDepth, localMaxLevel);
 			
 			if( aNode.children)
 				for( var x=0; x < aNode.children.length; x++)
@@ -1584,7 +1592,6 @@ this.arrangeForcePlot = function(arrangeChildren)
 		addNodeAndChildren(lastSelected);
 
 	}
-	
 	
 	for( var x=0; x < nodesToRun.length; x++ )
 	{
@@ -1596,12 +1603,13 @@ this.arrangeForcePlot = function(arrangeChildren)
 	
 	var root = lastSelected;
 	
+	// if we are not arranging to a child node
+	// the root is at the top of the tree in the center of the screen
 	if( ! root || ! arrangeChildren)
 	{
 		root = statics.getRoot();
 		root.x =  w / 2.0  + 20;
 		root.y = h /2.0;
-		
 	}
 	
 	var radius = Math.min(w,h)/2;
@@ -1619,13 +1627,15 @@ this.arrangeForcePlot = function(arrangeChildren)
 		
 	var piTwice= 2* Math.PI ;
 	
+	var range = statics.getMaxLevel() - localMinLevel
 	for( var x=0; x < nodesToRun.length; x++) if( nodesToRun[x].doNotShow==false ) 
 	{
 		nodesToRun[x].fixed=false;
 		nodesToRun[x].userMoved = false;
-		var aPosition = numAssignedArray[nodesToRun[x].nodeDepth]/numVisibleArray[nodesToRun[x].nodeDepth];
+		var aPosition = numAssignedArray[nodesToRun[x].nodeDepth]
+				/numVisibleArray[nodesToRun[x].nodeDepth];
 		
-		var aRad = (parseFloat(nodesToRun[x].nodeDepth)- localMinLevel)/(statics.getMaxLevel() - localMinLevel) * radius;
+		var aRad = (parseFloat(nodesToRun[x].nodeDepth)- localMinLevel)/range * radius;
 		nodesToRun[x].x = root.x- 
 			aRad * Math.cos( piTwice * aPosition) ;
 		nodesToRun[x].y  = aRad * Math.sin( piTwice *  aPosition) + root.y;
