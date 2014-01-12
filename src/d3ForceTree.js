@@ -145,6 +145,7 @@ var addNoise= false;
 var firstNoise = true;
 var dataNames = [];
 var lastSelected = null;
+var animationOn=false;
 
 this.addNoise = function()
 {
@@ -1243,6 +1244,16 @@ this.update = function()
 	      
 	      function updateNodesLinksText()
 	      {
+	    	  if( graphType == "ForceTree"  &&  animationOn)
+	    	  {
+	    		  for( var x=0; x < nodes.length; x++)
+	    		  {
+	    			  nodes[x].xMap[thisID]   = nodes[x].x;
+	    			  nodes[x].yMap[thisID]   = nodes[x].y;
+	    		  }
+	    	  }
+	    	  
+	    	  
 	      	 node.attr("cx", 
 					function (d){return thisContext.getAVal( d,true)}
 				)
@@ -1459,8 +1470,7 @@ this.releaseAllFixed = function()
 		}
 	}
 	
-		
-	
+	animationOn=true;
 	this.redrawScreen();
 }
 
@@ -1663,6 +1673,8 @@ this.arrangeForcePlot = function(arrangeChildren)
 		lastSelected.fixed=true;
 		lastSelected.userMoved = true;
 	}
+	
+	animationOn = false;
 }
 
 
