@@ -170,20 +170,6 @@ if( queryStrings )
 		graphType = aGraphType;
 }
 
-// unregister any other ForceTrees.
-// Only 1 ForceTree graph 
-if( graphType == "ForceTree" )
-{
-	for( prop in statics.getGoObjects())
-	{
-		if( prop.thisID != thisID && statics.getGoObjects()[prop] &&
-					  statics.getGoObjects()[prop].graphType == "ForceTree")
-		{
-			prop.unregister();
-		}
-	}
-}
-
 
 this.resort = function()
 {
@@ -306,19 +292,38 @@ this.reforce = function()
     .linkDistance(function(d) { return d.target._children ? 80 * (d.nodeDepth-16)/16 : 30; })
     .size([w, h - 60]).gravity(aDocument.getElementById("gravitySlider").value/100)
     
+    aDrag = function(d)
+    {
+    	if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
+		{
+
+    		d.fixed=true; 
+    		d.userMoved = true;
+    		d.xMap[thisID]=d.x ;
+    		d.yMap[thisID] = d.y ;
+    		//thisContext.update();
+		}
+		
+	}
+    
+    
+    drag = force.drag().on("dragstart", function(d) { if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
+	{
+    	if( force ) 
+    	{
+    		force.stop();
+    	}
+		d.x = d.xMap[thisID] ;
+		d.y= d.yMap[thisID] ;
+	} });
+    drag = force.drag().on("drag", function(d) { aDrag(d) });
+    
     drag = force.drag().on("dragend", function(d) { 
-    						
-    						// disable drag and zoom for graph events for force tree view
-    						// since it is not working very well (very jumpy)
-    						if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
-    						{
-    							d.fixed=true; 
-        						d.userMoved = true;
-        						thisContext.update();
-    						}
-    						
-    							}
-    						);
+    if( force ) 
+	{
+		force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
+	} 
+    	thisContext.update(); });
 
     if( graphType != "ForceTree")
     {
@@ -335,11 +340,6 @@ this.reforce = function()
         .attr("width", w)
         .attr("height", h)
     }
-    
-    
-    
-    
-	 
 }
 
 // from http://blog.luzid.com/2013/extending-the-d3-zoomable-sunburst-with-labels/
@@ -851,7 +851,7 @@ this.getAVal = function (d, xAxis)
 
 	if( graphType == "ForceTree" )
 	{
-			return xAxis? d.x : d.y;	
+			return xAxis? d.xMap[thisID]: d.yMap[thisID];	
 	}
 	
 	chosen = null;
@@ -1215,7 +1215,7 @@ this.update = function()
       force.links(links)
       
       if( graphType == "ForceTree" )
-      	force.start().gravity(thisDocument.getElementById("gravitySlider").value/100);
+      	force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
   
 	  var node = vis.selectAll("circle.node")
 	      .data(filteredNodes, function(d) {return d.forceTreeNodeID; } )
@@ -1288,10 +1288,10 @@ this.update = function()
 		if( graphType == "ForceTree"  && ! aDocument.getElementById("hideLinks").checked )
 		{
 				link.attr("x1", function(d) { return d.source.x; })
-	      .attr("x1", function(d) { return d.source.x; })
-	      .attr("y1", function(d) { return d.source.y; })
-	      .attr("x2", function(d) { return d.target.x; })
-	      .attr("y2", function(d) { return d.target.y; });
+	      .attr("x1", function(d) { return d.source.xMap[thisID]; })
+	      .attr("y1", function(d) { return d.source.yMap[thisID]; })
+	      .attr("x2", function(d) { return d.target.xMap[thisID]; })
+	      .attr("y2", function(d) { return d.target.yMap[thisID]; });
 		}
 		
 		  	thisContext.checkForStop();
@@ -1480,6 +1480,9 @@ this.getTextColor= function(d)
 
 this.myMouseEnter = function(d)
 {
+	d.x = d.xMap[thisID];
+	d.y = d.yMap[thisID]
+	
 	if (! aDocument.getElementById("mouseOverHighlights").checked)
 		return;
 	
@@ -1617,8 +1620,8 @@ this.arrangeForcePlot = function(arrangeChildren)
 	if( ! root || ! arrangeChildren)
 	{
 		root = statics.getRoot();
-		root.x =  w / 2.0  + 20.0;
-		root.y = h /2.0;
+		root.xMap[thisID] =  w / 2.0  + 20.0;
+		root.yMap[thisID] = h /2.0;
 	}
 	
 	var radius = parseFloat( Math.min(w,h))/2.0;
@@ -1646,20 +1649,20 @@ this.arrangeForcePlot = function(arrangeChildren)
 				/numVisibleArray[nodesToRun[x].nodeDepth];
 		
 		var aRad = (parseFloat(nodesToRun[x].nodeDepth)- localMinLevel)/range * radius;
-		nodesToRun[x].x = root.x- 
+		nodesToRun[x].xMap[thisID] = root.xMap[thisID]- 
 			aRad * Math.cos( piTwice * aPosition) ;
-		nodesToRun[x].y  = aRad * Math.sin( piTwice *  aPosition) + root.y;
+		nodesToRun[x].yMap[thisID]  = aRad * Math.sin( piTwice *  aPosition) + root.yMap[thisID];
 		numAssignedArray[nodesToRun[x].nodeDepth] = numAssignedArray[nodesToRun[x].nodeDepth]+ 1;
 		nodesToRun[x].fixMeNextTime= true;
+		nodesToRun[x].x = nodesToRun[x].xMap[thisID];
+		nodesToRun[x].y = nodesToRun[x].yMap[thisID];
 	}
 	
 	if(  arrangeChildren &&  lastSelected)
 	{
 		lastSelected.fixed=true;
 		lastSelected.userMoved = true;
-		
 	}
-	
 }
 
 
