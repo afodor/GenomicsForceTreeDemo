@@ -1067,6 +1067,18 @@ this.handleKeyboardEvent = function(e)
         	thisContext.hideAndShow();
         	thisContext.redrawScreen();
         }
+        else if ( String.fromCharCode(charCode) == "Q" || String.fromCharCode(charCode) == 'q')
+        {
+        	var aVal = parseFloat( aDocument.getElementById("localGravity").value);
+        	aVal = aVal + 0.5;
+        	aDocument.getElementById("localGravity").value = aVal
+        }
+        else if ( String.fromCharCode(charCode) == "W" || String.fromCharCode(charCode) == 'w')
+        {
+        	var aVal = parseFloat( aDocument.getElementById("localGravity").value);
+        	aVal = aVal - 0.5;
+        	aDocument.getElementById("localGravity").value = aVal
+        }
     }
 }
 
