@@ -147,6 +147,9 @@ var dataNames = [];
 var lastSelected = null;
 var animationOn=false;
 
+var stopOnGrandChild = false;
+var stopOnChild = false;
+
 this.addNoise = function()
 {
 	addNoise= true;
@@ -1244,6 +1247,17 @@ this.update = function()
 	      
 	      function updateNodesLinksText()
 	      {
+	    	  if( stopOnGrandChild)
+	    	  {
+	    		  stopOnChild = true;
+	    		  stopOnGrandChild = false;
+	    	  } else if (stopOnChild)
+	    	  {
+	    		  if( force)
+	    			  force.stop();
+	    	  }
+	    	  
+	    	  
 	    	  if( graphType == "ForceTree"  &&  animationOn)
 	    	  {
 	    		  for( var x=0; x < nodes.length; x++)
@@ -1350,7 +1364,7 @@ this.update = function()
 		
 		force.on("tick", updateNodesLinksText);
 		
-		force.on("end", updateNodesLinksText);
+		//force.on("end", updateNodesLinksText);
 	    
 	      
 	      	// Update the links
@@ -1471,6 +1485,8 @@ this.releaseAllFixed = function()
 	}
 	
 	animationOn=true;
+	stopOnGrandChild = false;
+	stopOnChild = false;
 	this.redrawScreen();
 }
 
@@ -1675,6 +1691,13 @@ this.arrangeForcePlot = function(arrangeChildren)
 	}
 	
 	animationOn = false;
+	stopOnGrandChild = true;
+	stopOnChild = false;
+
+	if( force ) 
+	{
+		force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
+	}
 }
 
 
