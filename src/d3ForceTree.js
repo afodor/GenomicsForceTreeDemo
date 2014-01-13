@@ -312,7 +312,7 @@ this.reforce = function()
     {
     	if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
 		{
-
+    		
     		d.fixed=true; 
     		d.userMoved = true;
     		d.xMap[thisID]=d.x ;
@@ -325,17 +325,15 @@ this.reforce = function()
     
     drag = force.drag().on("dragstart", function(d) { if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
 	{
-    	if( force ) 
-    	{
+    	if( force)
     		force.stop();
-    	}
-		d.x = d.xMap[thisID] ;
+    	d.x = d.xMap[thisID] ;
 		d.y= d.yMap[thisID] ;
 	} });
     drag = force.drag().on("drag", function(d) { aDrag(d) });
     
     drag = force.drag().on("dragend", function(d) { 
-    if( force ) 
+    if( isRunFromTopWindow &&  force && animationOn   ) 
 	{
 		force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
 	} 
@@ -1230,8 +1228,8 @@ this.update = function()
       			&& ! aDocument.getElementById("hideLinks").checked )
       force.links(links)
       
-      if( graphType == "ForceTree" )
-      	force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
+      //if( graphType == "ForceTree" )
+      //	force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
   
 	  var node = vis.selectAll("circle.node")
 	      .data(filteredNodes, function(d) {return d.forceTreeNodeID; } )
@@ -1533,6 +1531,12 @@ this.getTextColor= function(d)
 
 this.myMouseEnter = function(d)
 {
+	if( ! isRunFromTopWindow || ! animationOn)
+	{
+		if( force)
+			force.stop();
+	}
+	
 	d.x = d.xMap[thisID];
 	d.y = d.yMap[thisID]
 	
