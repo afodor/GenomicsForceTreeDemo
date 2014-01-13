@@ -5031,18 +5031,18 @@ d3 = function() {
       function insert(n, d, x, y, x1, y1, x2, y2) {
         if (isNaN(x) || isNaN(y)) return;
         if (n.leaf) {
-          var nx = n.xMap[invokingID], ny = n.yMap[invokingID];
+          var nx = n.x, ny = n.y;
           if (nx != null) {
             if (abs(nx - x) + abs(ny - y) < .01) {
               insertChild(n, d, x, y, x1, y1, x2, y2);
             } else {
               var nPoint = n.point;
-              n.xMap[invokingID] = n.yMap[invokingID] = n.point = null;
+              n.x = n.y = n.point = null;
               insertChild(n, nPoint, nx, ny, x1, y1, x2, y2);
               insertChild(n, d, x, y, x1, y1, x2, y2);
             }
           } else {
-        	  n.xMap[invokingID]= x, n.xMap[invokingID]= y, n.point = d;
+        	  n.x= x, n.y= y, n.point = d;
           }
         } else {
           insertChild(n, d, x, y, x1, y1, x2, y2);
