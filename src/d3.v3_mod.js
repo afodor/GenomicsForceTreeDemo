@@ -5010,10 +5010,10 @@ d3 = function() {
         n = data.length;
         if (compat) for (i = 0; i < n; ++i) {
           d = data[i];
-          if (d.x < x1_) x1_ = d.xMap[invokingID];
-          if (d.y < y1_) y1_ = d.yMap[invokingID];
-          if (d.x > x2_) x2_ = d.xMap[invokingID];
-          if (d.y > y2_) y2_ = d.yMap[invokingID];
+          if (d.xMap[invokingID]< x1_) x1_ = d.xMap[invokingID];
+          if (d.yMap[invokingID] < y1_) y1_ = d.yMap[invokingID];
+          if (d.xMap[invokingID]> x2_) x2_ = d.xMap[invokingID];
+          if (d.yMap[invokingID]> y2_) y2_ = d.yMap[invokingID];
           xs.push(d.xMap[invokingID]);
           ys.push(d.yMap[invokingID]);
         } else for (i = 0; i < n; ++i) {
@@ -5719,8 +5719,8 @@ d3 = function() {
           o.xMap[invokingID] = o.px;
           o.yMap[invokingID]= o.py;
         } else {
-          o.xMap[invokingID] -= (o.px - (o.px = o.x)) * friction;
-          o.yMap[invokingID] -= (o.py - (o.py = o.y)) * friction;
+          o.xMap[invokingID] -= (o.px - (o.px = o.xMap[invokingID] )) * friction;
+          o.yMap[invokingID] -= (o.py - (o.py = o.yMap[invokingID])) * friction;
         }
       }
       event.tick({

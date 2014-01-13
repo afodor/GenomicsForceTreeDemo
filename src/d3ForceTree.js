@@ -848,10 +848,15 @@ this.isNumber = function (n) {
 
 this.getAVal = function (d, xAxis)
 {
-
+	if( xAxis && ! d.xMap[thisID])
+		return 500;
+	
+	if( !xAxis && ! d.yMap[thisID])
+		return 500;
+		
 	if( graphType == "ForceTree" )
 	{
-			return xAxis? d.xMap[thisID]: d.yMap[thisID];	
+		return xAxis? d.xMap[thisID]: d.yMap[thisID];	
 	}
 	
 	chosen = null;
@@ -1100,6 +1105,7 @@ return true;
 
 this.update = function() 
 {
+	//console.log(nodes);
 	if( ! initHasRun )
 		return;
  	
@@ -1198,7 +1204,7 @@ this.update = function()
 		
 		for( var z=0; z < filteredNodes .length; z++)
 			filteredNodes[z].setVisible=true;
-		
+
 		if( graphType == "ForceTree") 
 		{
 			links = d3.layout.tree().links(nodes);
@@ -1640,6 +1646,8 @@ this.arrangeForcePlot = function(arrangeChildren)
 		root.yMap[thisID] = h /2.0;
 	}
 	
+	//console.log("Root is " + root.xMap[thisID]  + " " + root.yMap[thisID] );
+	
 	var radius = parseFloat( Math.min(w,h))/2.0;
 	
 	radius = radius - radius * parseFloat(aDocument.getElementById("gravitySlider").value)/100.0;
@@ -1681,7 +1689,7 @@ this.arrangeForcePlot = function(arrangeChildren)
 	animationOn = false;
 	stopOnGrandChild = true;
 	stopOnChild = false;
-
+	
 	if( force ) 
 	{
 		force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
