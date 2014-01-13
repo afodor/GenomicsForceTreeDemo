@@ -5010,12 +5010,12 @@ d3 = function() {
         n = data.length;
         if (compat) for (i = 0; i < n; ++i) {
           d = data[i];
-          if (d.x < x1_) x1_ = d.x;
-          if (d.y < y1_) y1_ = d.y;
-          if (d.x > x2_) x2_ = d.x;
-          if (d.y > y2_) y2_ = d.y;
-          xs.push(d.x);
-          ys.push(d.y);
+          if (d.x < x1_) x1_ = d.xMap[invokingID];
+          if (d.y < y1_) y1_ = d.yMap[invokingID];
+          if (d.x > x2_) x2_ = d.xMap[invokingID];
+          if (d.y > y2_) y2_ = d.yMap[invokingID];
+          xs.push(d.xMap[invokingID]);
+          ys.push(d.yMap[invokingID]);
         } else for (i = 0; i < n; ++i) {
           var x_ = +fx(d = data[i], i), y_ = +fy(d, i);
           if (x_ < x1_) x1_ = x_;
@@ -5031,18 +5031,18 @@ d3 = function() {
       function insert(n, d, x, y, x1, y1, x2, y2) {
         if (isNaN(x) || isNaN(y)) return;
         if (n.leaf) {
-          var nx = n.x, ny = n.y;
+          var nx = n.xMap[invokingID], ny = n.yMap[invokingID];
           if (nx != null) {
             if (abs(nx - x) + abs(ny - y) < .01) {
               insertChild(n, d, x, y, x1, y1, x2, y2);
             } else {
               var nPoint = n.point;
-              n.x = n.y = n.point = null;
+              n.xMap[invokingID] = n.yMap[invokingID] = n.point = null;
               insertChild(n, nPoint, nx, ny, x1, y1, x2, y2);
               insertChild(n, d, x, y, x1, y1, x2, y2);
             }
           } else {
-            n.x = x, n.y = y, n.point = d;
+        	  n.xMap[invokingID]= x, n.xMap[invokingID]= y, n.point = d;
           }
         } else {
           insertChild(n, d, x, y, x1, y1, x2, y2);
@@ -5646,12 +5646,13 @@ d3 = function() {
     };
     return chord;
   };
-  d3.layout.force = function() {
+  d3.layout.force = function(invokingContext) {
+	  invokingID = invokingContext.getThisId();
     var force = {}, event = d3.dispatch("start", "tick", "end"), size = [ 1, 1 ], drag, alpha, friction = .9, linkDistance = d3_layout_forceLinkDistance, linkStrength = d3_layout_forceLinkStrength, charge = -30, gravity = .1, theta = .8, nodes = [], links = [], distances, strengths, charges;
     function repulse(node) {
       return function(quad, x1, _, x2) {
         if (quad.point !== node) {
-          var dx = quad.cx - node.x, dy = quad.cy - node.y, dn = 1 / Math.sqrt(dx * dx + dy * dy);
+          var dx = quad.cx - node.xMap[invokingID], dy = quad.cy - node.yMap[invokingID], dn = 1 / Math.sqrt(dx * dx + dy * dy);
           if ((x2 - x1) * dn < theta) {
             var k = quad.charge * dn * dn;
             node.px -= dx * k;
@@ -5680,16 +5681,16 @@ d3 = function() {
         o = links[i];
         s = o.source;
         t = o.target;
-        x = t.x - s.x;
-        y = t.y - s.y;
+        x = t.xMap[invokingID] - s.xMap[invokingID];
+        y = t.yMap[invokingID] - s.yMap[invokingID];
         if (l = x * x + y * y) {
           l = alpha * strengths[i] * ((l = Math.sqrt(l)) - distances[i]) / l;
           x *= l;
           y *= l;
-          t.x -= x * (k = s.weight / (t.weight + s.weight));
-          t.y -= y * k;
-          s.x += x * (k = 1 - k);
-          s.y += y * k;
+          t.xMap[invokingID] -= x * (k = s.weight / (t.weight + s.weight));
+          t.yMap[invokingID] -= y * k;
+          s.xMap[invokingID] += x * (k = 1 - k);
+          s.yMap[invokingID] += y * k;
         }
       }
       if (k = alpha * gravity) {
@@ -5698,8 +5699,8 @@ d3 = function() {
         i = -1;
         if (k) while (++i < n) {
           o = nodes[i];
-          o.x += (x - o.x) * k;
-          o.y += (y - o.y) * k;
+          o.xMap[invokingID] += (x - o.xMap[invokingID]) * k;
+          o.yMap[invokingID] += (y - o.yMap[invokingID]) * k;
         }
       }
       if (charge) {
@@ -5715,11 +5716,11 @@ d3 = function() {
       while (++i < n) {
         o = nodes[i];
         if (o.fixed) {
-          o.x = o.px;
-          o.y = o.py;
+          o.xMap[invokingID] = o.px;
+          o.yMap[invokingID]= o.py;
         } else {
-          o.x -= (o.px - (o.px = o.x)) * friction;
-          o.y -= (o.py - (o.py = o.y)) * friction;
+          o.xMap[invokingID] -= (o.px - (o.px = o.x)) * friction;
+          o.yMap[invokingID] -= (o.py - (o.py = o.y)) * friction;
         }
       }
       event.tick({
@@ -5802,10 +5803,10 @@ d3 = function() {
       }
       for (i = 0; i < n; ++i) {
         o = nodes[i];
-        if (isNaN(o.x)) o.x = position("x", w);
-        if (isNaN(o.y)) o.y = position("y", h);
-        if (isNaN(o.px)) o.px = o.x;
-        if (isNaN(o.py)) o.py = o.y;
+        if (isNaN(o.xMap[invokingID])) o.xMap[invokingID] = position("x", w);
+        if (isNaN(o.yMap[invokingID])) o.yMap[invokingID] = position("y", h);
+        if (isNaN(o.px)) o.px = o.xMap[invokingID];
+        if (isNaN(o.py)) o.py = o.yMap[invokingID];
       }
       distances = [];
       if (typeof linkDistance === "function") for (i = 0; i < m; ++i) distances[i] = +linkDistance.call(this, links[i], i); else for (i = 0; i < m; ++i) distances[i] = linkDistance;
@@ -9272,7 +9273,7 @@ d3 = function() {
   d3.text = d3_xhrType(function(request) {
     return request.responseText;
   });
-  d3.json = function(url, callback) {
+  d3.json = function(url, callback) { 
     return d3_xhr(url, "application/json", d3_json, callback);
   };
   function d3_json(request) {

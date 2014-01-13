@@ -303,7 +303,7 @@ this.reforce = function()
 	
 	this.setWidthAndHeight();
 	
-    force = d3.layout.force()
+    force = d3.layout.force(thisContext)
     .charge(function(d) { return d._children ? -d.numSeqs / 100 : -30; })
     .linkDistance(function(d) { return d.target._children ? 80 * (d.nodeDepth-16)/16 : 30; })
     .size([w, h - 60]).gravity(aDocument.getElementById("gravitySlider").value/100)
@@ -315,29 +315,15 @@ this.reforce = function()
     		
     		d.fixed=true; 
     		d.userMoved = true;
-    		d.xMap[thisID]=d.x ;
-    		d.yMap[thisID] = d.y ;
-    		//thisContext.update();
 		}
 		
 	}
     
     
-    drag = force.drag().on("dragstart", function(d) { if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
-	{
-    	if( force)
-    		force.stop();
-    	d.x = d.xMap[thisID] ;
-		d.y= d.yMap[thisID] ;
-	} });
+    drag = force.drag().on("dragstart", function(d) { aDrag(d) });
     drag = force.drag().on("drag", function(d) { aDrag(d) });
     
-    drag = force.drag().on("dragend", function(d) { 
-    if( isRunFromTopWindow &&  force && animationOn   ) 
-	{
-		force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
-	} 
-    	thisContext.update(); });
+    drag = force.drag().on("dragend", function(d) { aDrag(d) });
 
     if( graphType != "ForceTree")
     {
@@ -358,7 +344,7 @@ this.reforce = function()
 
 // from http://blog.luzid.com/2013/extending-the-d3-zoomable-sunburst-with-labels/
 this.computeTextRotation = function(d) {
-	  var angle = x(d.x + d.dx / 2) - Math.PI / 2;
+	  var angle = x(d.xMap[thisID] + d.xMap[thisID]/ 2) - Math.PI / 2;
 	  return angle / Math.PI * 180;
 	}
 
@@ -1267,32 +1253,6 @@ this.update = function()
 	    			  force.stop();
 	    	  }
 	    	  
-	    	  if( statics.getRepopulatePrimary() && isRunFromTopWindow &&  animationOn  )
-	    	  {
-	    		  for( var x=0; x < nodes.length; x++)
-	    		  {
-	    			  nodes[x].x =nodes[x].xMap[thisID];
-	    			  nodes[x].y= nodes[x].yMap[thisID];
-	    			  
-	    			  //todo: Fixed should be set for each window
-	    			  nodes[x].fixed = false;
-		    		  statics.setRepopulatePrimary(false);
-	    		  }
-	    	  }
-	    	  else if( graphType == "ForceTree"  &&  animationOn)
-	    	  {
-	    		  for( var x=0; x < nodes.length; x++)
-	    		  {
-	    			  nodes[x].xMap[thisID]   = nodes[x].x;
-	    			  nodes[x].yMap[thisID]   = nodes[x].y;
-	    		  }
-	    	  }
-	    	  
-	    	  if( ! isRunFromTopWindow )
-	    	  {
-	    		  statics.setRepopulatePrimary(true);
-	    	  }
-	    	  
 	      	 node.attr("cx", 
 					function (d){return thisContext.getAVal( d,true)}
 				)
@@ -1315,8 +1275,8 @@ this.update = function()
 	      	{
 	      		
 	      	text.attr("transform", function(d) { return "translate(" + 
-						d.x
-							+ "," + d.y+ ")"; });
+						d.xMap[thisID]
+							+ "," + d.yMap[thisID]+ ")"; });
 			
 	      	}
 	      	else
@@ -1337,11 +1297,13 @@ this.update = function()
 			
 		if( graphType == "ForceTree"  && ! aDocument.getElementById("hideLinks").checked )
 		{
-				link.attr("x1", function(d) { return d.source.x; })
+			/*
+				link.
 	      .attr("x1", function(d) { return d.source.xMap[thisID]; })
 	      .attr("y1", function(d) { return d.source.yMap[thisID]; })
 	      .attr("x2", function(d) { return d.target.xMap[thisID]; })
 	      .attr("y2", function(d) { return d.target.yMap[thisID]; });
+	      */
 		}
 		
 		  	thisContext.checkForStop();
@@ -1537,9 +1499,6 @@ this.myMouseEnter = function(d)
 			force.stop();
 	}
 	
-	d.x = d.xMap[thisID];
-	d.y = d.yMap[thisID]
-	
 	if (! aDocument.getElementById("mouseOverHighlights").checked)
 		return;
 	
@@ -1711,8 +1670,6 @@ this.arrangeForcePlot = function(arrangeChildren)
 		nodesToRun[x].yMap[thisID]  = aRad * Math.sin( piTwice *  aPosition) + root.yMap[thisID];
 		numAssignedArray[nodesToRun[x].nodeDepth] = numAssignedArray[nodesToRun[x].nodeDepth]+ 1;
 		nodesToRun[x].fixMeNextTime= true;
-		nodesToRun[x].x = nodesToRun[x].xMap[thisID];
-		nodesToRun[x].y = nodesToRun[x].yMap[thisID];
 	}
 	
 	if(  arrangeChildren &&  lastSelected)
