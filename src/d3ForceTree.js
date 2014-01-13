@@ -14,7 +14,19 @@ function StaticHolder()
 		StaticHolder.highlightedNode=null;
 		StaticHolder.maxLevel = -1;
 		StaticHolder.highlightReverse=false;
+		StaticHolder.repopulatePrimary = false;
 	}
+	
+	this.setRepopulatePrimary = function( bool)
+	{
+		StaticHolder.repopulatePrimary = bool;
+	}
+	
+	this.getRepopulatePrimary = function()
+	{
+		return StaticHolder.repopulatePrimary;
+	}
+	
 	
 	this.setMaxLevel = function(aLevel)
 	{
@@ -1257,8 +1269,19 @@ this.update = function()
 	    			  force.stop();
 	    	  }
 	    	  
-	    	  
-	    	  if( graphType == "ForceTree"  &&  animationOn)
+	    	  if( statics.getRepopulatePrimary() && isRunFromTopWindow &&  animationOn  )
+	    	  {
+	    		  for( var x=0; x < nodes.length; x++)
+	    		  {
+	    			  nodes[x].x =nodes[x].xMap[thisID];
+	    			  nodes[x].y= nodes[x].yMap[thisID];
+	    			  
+	    			  //todo: Fixed should be set for each window
+	    			  nodes[x].fixed = false;
+		    		  statics.setRepopulatePrimary(false);
+	    		  }
+	    	  }
+	    	  else if( graphType == "ForceTree"  &&  animationOn)
 	    	  {
 	    		  for( var x=0; x < nodes.length; x++)
 	    		  {
@@ -1267,6 +1290,10 @@ this.update = function()
 	    		  }
 	    	  }
 	    	  
+	    	  if( ! isRunFromTopWindow )
+	    	  {
+	    		  statics.setRepopulatePrimary(true);
+	    	  }
 	    	  
 	      	 node.attr("cx", 
 					function (d){return thisContext.getAVal( d,true)}
