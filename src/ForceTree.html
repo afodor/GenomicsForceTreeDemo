@@ -123,12 +123,8 @@
 	{
 		var graphName = document.getElementById("graphType").value;
 		
-		// forceTrees must be singletons since they share x and y.
-		if( document.getElementById("graphType").value != "ForceTree")
-		{
-			graphName += ("" + graph);
-			graph++;
-		}
+		graphName += ("" + graph);
+		graph++;
 		
 		newWindow = window.open("ForceTreeDaughter.html?GraphType=" + 
 		document.getElementById("graphType").value 
