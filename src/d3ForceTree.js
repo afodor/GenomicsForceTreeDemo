@@ -1255,8 +1255,13 @@ this.update = function()
 	      .on("mouseleave", this.myMouseLeave)
 	      
 	      if( graphType == "ForceTree"  )
-	      	node.call(force.drag);
-	      
+	      {
+	      		// sometimes in d3 the parentNode was getting set to null
+	      		// this is an attempt to not let that happen.
+	      		node.call(force.drag);
+	      		node.attr("parentNode", vis);
+	      }
+	      	
 	      function updateNodesLinksText()
 	      {
 	    	  if( stopOnGrandChild)
