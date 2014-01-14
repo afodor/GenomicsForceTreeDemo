@@ -31,19 +31,30 @@
 							<option value="deletes">Click delete sub-nodes</option>
 					</select></li>
 
-				</ul></li>
+				</ul>
+			</li>
 
 			<li><a>Colors</a>
 				<ul id="ColorSubMenu">
 
-					<li><a>quantiative range...</a>
+					<li><a>qualitative range...</a>
 					<ul>
 							<li>From<input type="number" id="lowQuantRange"
 								onchange=myGo.redrawScreen() onkeypress="return myGo.isNumber(event)"></input></li>
 							<li>To <input type="number" id="highQuantRange"
 								onchange=myGo.redrawScreen() onkeypress="return myGo.isNumber(event)"></input></li>
 						</ul>
-					<li>
+					<li></li>
+					
+					
+					<li><a>qunatitative range...</a><ul>
+		<li id="color1">Quantiative low<input id="quantColorLow"
+			class="color" value="ff0000" onchange=myGo.redrawScreen()>
+		</li>
+		<li id="color2">Quantitiatve high<input id="quantColorHigh"
+			class="color" value="0000ff" onchange=myGo.redrawScreen()>
+		</li></ul>
+					
 				</ul>
 			<li>
 			<li><a>Plot</a>
@@ -105,15 +116,7 @@
 		<!--<div id="myCanvas"></div>-->
 
 		<!--<script type="text/javascript" src="jscolor/jscolor.js"></script>-->
-
-
-		<li id="color1">Quantitiatve low<input id="quantColorLow"
-			class="color" value="ff0000" onchange=myGo.redrawScreen()>
-		</li>
-		<li id="color2">Quantitiatve high<input id="quantColorHigh"
-			class="color" value="0000ff" onchange=myGo.redrawScreen()>
-		</li>
-
+		
 		<script type="text/javascript" src="d3.v3.js"></script>
 		<script type="text/javascript" src="d3ForceTree.js"></script>
 		<script type="text/javascript">

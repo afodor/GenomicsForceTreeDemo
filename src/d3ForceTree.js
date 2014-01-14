@@ -1482,11 +1482,11 @@ this.update = function()
 	if( firstUpdate && isRunFromTopWindow) 
 	{
 		this.setQuantitativeDynamicRanges();
-  		aDocument.getElementById("ColorSubMenu").appendChild(aDocument.getElementById("color1"));
-		aDocument.getElementById("color1").style.visibility="visible";
+  		//aDocument.getElementById("ColorSubMenu").appendChild(aDocument.getElementById("color1"));
+		//aDocument.getElementById("color1").style.visibility="visible";
 		
-		aDocument.getElementById("ColorSubMenu").appendChild(aDocument.getElementById("color2"));
-		aDocument.getElementById("color2").style.visibility="visible";
+		//aDocument.getElementById("ColorSubMenu").appendChild(aDocument.getElementById("color2"));
+		//aDocument.getElementById("color2").style.visibility="visible";
 	}	
   	
   	firstUpdate = false;
@@ -1971,8 +1971,8 @@ this.reforce();
 
 if( isRunFromTopWindow ) 
 {
-	aDocument.getElementById("color1").style.visibility="hidden";
-	aDocument.getElementById("color2").style.visibility="hidden";
+	//aDocument.getElementById("color1").style.visibility="hidden";
+	//aDocument.getElementById("color2").style.visibility="hidden";
 	//todo: nice error message if file can't be found
 	d3.json(getQueryStrings(thisWindow)["FileToOpen"], function(json) 
 	{
