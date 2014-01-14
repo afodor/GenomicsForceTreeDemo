@@ -292,15 +292,6 @@ this.reforce = function()
 		force.stop();
 	}
 	
-	if( vis != null)
-	{
-		vis.selectAll("text").remove()
-		vis.selectAll("circle.node").remove();
-		vis.selectAll("line.link").remove();
-		vis.selectAll("line").remove();
-		d3.select("body").select("svg").remove();
-	}
-	
 	this.setWidthAndHeight();
 	
     force = d3.layout.force()
@@ -1203,10 +1194,6 @@ this.update = function()
 	 		nodes[i].thisNodeRadius = this.getRadiusVal(nodes[i]);
 	 	}	
 		
-		vis.selectAll("text").remove()
-		vis.selectAll("circle.node").remove();
-		vis.selectAll("line.link").remove();
-		vis.selectAll("line").remove();
 		for( var z=0; z < nodes.length; z++)
 			nodes[z].setVisible=false;
 		
@@ -1398,8 +1385,7 @@ this.update = function()
 		
 		//force.on("end", updateNodesLinksText);
 	    
-	      
-	      	// Update the links
+	    // Update the links
 	      	if( graphType == "ForceTree" && ! aDocument.getElementById("hideLinks").checked )
   		link = vis.selectAll("line.link")
       .data(links.filter(this.myFilterLinks), function(d) {  return d.target.forceTreeNodeID; }
