@@ -1201,6 +1201,8 @@ this.update = function()
 		
 		for( var z=0; z < filteredNodes .length; z++)
 			filteredNodes[z].setVisible=true;
+
+		vis.selectAll("text").remove();
 		
 		if( graphType == "ForceTree") 
 		{
