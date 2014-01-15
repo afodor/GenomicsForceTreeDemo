@@ -508,13 +508,13 @@ this.reVisOne = function()
 	selectHTML +=  "</select>"	
 	mySidebar.innerHTML += selectHTML
 	mySidebar.innerHTML += "<br>Max size: <input type=\"number\"" + 
-			 " id=\"maxSize\" min=\"0\" max=\"100\" value=\"30\" onkeypress=\"return myGo.isNumber(event)\" onchange=myGo.redrawScreen()></input>" +
+			 " id=\"maxSize\" min=\"0\" max=\"100\" value=\"30\" onkeypress=\"return myGo.isNumber(event)\" onchange=myGo.reVis(false)></input>" +
 			 "<br>Min size: <input type=\"number\"" + 
-			 " id=\"minSize\" min=\"0\" max=\"100\"  value=\"2\" onkeypress=\"return myGo.isNumber(event)\" onchange=myGo.redrawScreen()></input>"   + 
+			 " id=\"minSize\" min=\"0\" max=\"100\"  value=\"2\" onkeypress=\"return myGo.isNumber(event)\" onchange=myGo.reVis(false)></input>"   + 
 	"<br><input type=\"checkbox\"" + 
-			"id=\"logSize\" onchange=myGo.redrawScreen()>log</input>"
+			"id=\"logSize\" onchange=myGo.reVis(false)>log</input>"
 			+"<input type=\"checkbox\"" + 
-			"id=\"invertSize\" onchange=myGo.redrawScreen()>invert</input><br>"
+			"id=\"invertSize\" onchange=myGo.reVis(false)>invert</input><br>"
 	
 	var dataMenuHTML =   "<li id=\"dataMenu\"><a>Data</a><ul>";
 	for( var propertyName in nodes[0])
