@@ -1210,6 +1210,8 @@ this.update = function()
 			newVal.x = filteredNodes[x].x;
 			newVal.y = filteredNodes[x].x;
 			newVal.setVisible = true;
+			newVal.fixed=filteredNodes[x].fixed;
+			newVal.userMoved = filteredNodes[x].userMoved;
 			newVal.myParentNode = filteredNodes[x];
 			newList.push(newVal);
 		}
@@ -1551,7 +1553,7 @@ this.myMouseEnter = function(d)
 		
 	statics.setHighlightedNode(d.myParentNode);
 	d.myParentNode.highlight = true;
-	lastSelected = d;
+	lastSelected = d.myParentNode;
 	
 	infoPane = aDocument.getElementById("rightInfoArea")
 	
