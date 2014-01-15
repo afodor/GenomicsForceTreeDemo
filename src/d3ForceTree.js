@@ -504,7 +504,7 @@ this.reVisOne = function()
    	mySidebar.innerHTML +=  "<select id=\"sortByWhat\" onChange=myGo.resort()></select>"
 
    	mySidebar.innerHTML += "<h3> Size: <h3>"
-  	var selectHTML =  "<select id=\"sizeByWhat\" onchange=myGo.redrawScreen()>"
+  	var selectHTML =  "<select id=\"sizeByWhat\" onchange=myGo.reVis(false)>"
 	selectHTML +=  "</select>"	
 	mySidebar.innerHTML += selectHTML
 	mySidebar.innerHTML += "<br>Max size: <input type=\"number\"" + 
