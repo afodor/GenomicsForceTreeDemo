@@ -306,13 +306,12 @@ this.reforce = function()
 
     		d.fixed=true; 
     		d.userMoved = true;
-    		d.xMap[thisID]=d.x ;
-    		d.yMap[thisID] = d.y ;
+    		d.myParentNode.xMap[thisID]=d.x ;
+    		d.myParentNode.yMap[thisID] = d.y ;
     		//thisContext.update();
 		}
 		
 	}
-    
     
     drag = force.drag().on("dragstart", function(d) { if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
 	{
@@ -320,8 +319,8 @@ this.reforce = function()
     	{
     		force.stop();
     	}
-		d.x = d.xMap[thisID] ;
-		d.y= d.yMap[thisID] ;
+		d.x = d.myParentNode.xMap[thisID] ;
+		d.y= d.myParentNode.yMap[thisID] ;
 	} });
     drag = force.drag().on("drag", function(d) { aDrag(d) });
     
@@ -855,6 +854,7 @@ this.isNumber = function (n) {
 
 this.getAVal = function (d, xAxis)
 {
+	d = d.myParentNode;
 
 	if( graphType == "ForceTree" )
 	{
@@ -1202,6 +1202,20 @@ this.update = function()
 		for( var z=0; z < filteredNodes .length; z++)
 			filteredNodes[z].setVisible=true;
 
+		var newList = [];
+		
+		for( var x=0; x < filteredNodes.length; x++ )
+		{
+			var newVal = {};
+			newVal.x = filteredNodes[x].x;
+			newVal.y = filteredNodes[x].x;
+			newVal.setVisible = true;
+			newVal.myParentNode = filteredNodes[x];
+			newList.push(newVal);
+		}
+		
+		filteredNodes = newList;
+		
 		vis.selectAll("text").remove();
 		
 		if( graphType == "ForceTree") 
@@ -1223,8 +1237,8 @@ this.update = function()
       	force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
   
 	  var node = vis.selectAll("circle.node")
-	      .data(filteredNodes, function(d) {return d.forceTreeNodeID; } )
-	      .style("fill", function(d) { return d.thisNodeColor} )
+	      .data(filteredNodes, function(d) {return d.myParentNode.forceTreeNodeID; } )
+	      .style("fill", function(d) { return d.myParentNode.thisNodeColor} )
 	      .style("opacity",aDocument.getElementById("opacitySlider").value/100 );
 	
 	
@@ -1237,8 +1251,8 @@ this.update = function()
 	      .attr("cy", 
 					function (d){return thisContext.getAVal( d,false)}
 				)
-	      .attr("r", function(d) {  return d.thisNodeRadius})
-	      .style("fill", function(d) { return d.thisNodeColor}).
+	      .attr("r", function(d) {  return d.myParentNode.thisNodeRadius})
+	      .style("fill", function(d) { return d.myParentNode.thisNodeColor}).
 	      style("opacity",aDocument.getElementById("opacitySlider").value/100 ) 
 	     .on("mouseenter", this.myMouseEnter)
 	      .on("mouseleave", this.myMouseLeave)
@@ -1526,8 +1540,6 @@ this.getTextColor= function(d)
 
 this.myMouseEnter = function(d)
 {
-	d.x = d.xMap[thisID];
-	d.y = d.yMap[thisID]
 	
 	if (! aDocument.getElementById("mouseOverHighlights").checked)
 		return;
@@ -1545,7 +1557,7 @@ this.myMouseEnter = function(d)
 	
 	var someHTML = "<table>";
 	
-	for( prop in d)
+	for( prop in d.myParentNode)
 	{
 		if( prop != "forceTreeNodeID" 
 				&& prop != "x" 
@@ -1560,7 +1572,7 @@ this.myMouseEnter = function(d)
 						prop != "marked" && prop != "doNotShow" && prop != "listPosition" && prop != "px" &&
 						prop != "py" && prop != "weight" && prop != "aParentNode" && prop != "fixMeNextTime" )
 		{
-			var aVal = "" + d[prop];
+			var aVal = "" + d.myParentNode[prop];
 			
 			//todo: This will truncate long strings..
 			someHTML += ( "<tr><td>" +  prop + "</td><td> " + aVal.substring(0,25) + "</td></tr>" )
