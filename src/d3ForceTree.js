@@ -1868,12 +1868,14 @@ this.flatten= function ()
 {
 	if( ! isRunFromTopWindow  )
 	{
+
 		nodes = statics.getNodes();
+		
+  		for( var x=0; x < nodes.length; x++)
+  			nodes[x].childNodes[thisID] = {};
+  		
 		this.setInitialPositions();
   		this.addDynamicMenuContent();
-  		
-  		for( var x=0; x < nodes.length; x++)
-  			myNodes[i].childNodes[thisID] = {};
   		
   		return;
 	}
