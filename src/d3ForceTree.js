@@ -558,7 +558,7 @@ this.reVisOne = function()
   				
   				if(propertyName != "xMapNoise"
 						&& propertyName != "yMapNoise" &&
-						propertyName != "childNodes")
+						propertyName != "displayNodes")
 					dataMenuHTML+=
 						"<li id=\"dataRange" + propertyName + "\"><a>" + propertyName   +" </a></li>"  
 						
@@ -860,7 +860,7 @@ this.getAVal = function (d, xAxis)
 	if( chosen == "circleY" ) 
 		return d.y;
 	
-	d = d.childNodes[thisID].myParentNode;
+	d = d.displayNodes[thisID].myParentNode;
 	
 	// quantitative scale 
 	if( statics.getRanges()[chosen] != null)
@@ -1188,11 +1188,11 @@ this.update = function()
 		var newFilterNodes = [];
 		
 		for( var x=0; x < filteredNodes.length; x++ )
-			newFilterNodes.push(filteredNodes[x]);
+			newFilterNodes.push(filteredNodes[x].displayNodes[thisID]);
 		
 		filteredNodes = newFilterNodes;
 		
-		for( var z=0; z < filteredNodes .length; z++)
+		for( var z=0; z < filteredNodes.length; z++)
 			filteredNodes[z].setVisible=true;
 
 		vis.selectAll("text").remove();
@@ -1216,10 +1216,9 @@ this.update = function()
       	force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
   
 	  var node = vis.selectAll("circle.node")
-	      .data(filteredNodes, function(d) {return d.forceTreeNodeID; } )
-	      .style("fill", function(d) { return d.thisNodeColor} )
+	      .data(filteredNodes, function(d) {return d.myParentNode.forceTreeNodeID; } )
+	      .style("fill", function(d) { return d.myParentNode.thisNodeColor} )
 	      .style("opacity",aDocument.getElementById("opacitySlider").value/100 );
-	
 	
 	  // Enter any new nodes.
 	 node.enter().append("svg:circle").on("click", this.myClick)
@@ -1230,8 +1229,8 @@ this.update = function()
 	      .attr("cy", 
 					function (d){return thisContext.getAVal( d,false)}
 				)
-	      .attr("r", function(d) {  return d.thisNodeRadius})
-	      .style("fill", function(d) { return d.thisNodeColor}).
+	      .attr("r", function(d) {  return d.myParentNode.thisNodeRadius})
+	      .style("fill", function(d) { return d.myParentNode.thisNodeColor}).
 	      style("opacity",aDocument.getElementById("opacitySlider").value/100 ) 
 	     .on("mouseenter", this.myMouseEnter)
 	      .on("mouseleave", this.myMouseLeave)
@@ -1300,7 +1299,7 @@ this.update = function()
 			
 		if( graphType == "ForceTree"  && ! aDocument.getElementById("hideLinks").checked )
 		{
-				link.attr("x1", function(d) { return d.source.x; })
+		   link.attr("x1", function(d) { return d.source.x; })
 	      .attr("y1", function(d) { return d.source.y; })
 	      .attr("x2", function(d) { return d.target.x; })
 	      .attr("y2", function(d) { return d.target.y; });
@@ -1328,10 +1327,10 @@ this.update = function()
 		    				  
 		    				  if( ! childNode.doNotShow)
 		    				  {
-			    				  vis.append("line").attr("x1", aNode.childNodes[thisID].x).
-			    				  					attr("y1", aNode.childNodes[thisID].y).
-			    				  					attr("x2", childNode.childNodes[thisID].x).
-			    				  					attr("y2", childNode.childNodes[thisID].y).
+			    				  vis.append("line").attr("x1", aNode.displayNodes[thisID].x).
+			    				  					attr("y1", aNode.displayNodes[thisID].y).
+			    				  					attr("x2", childNode.displayNodes[thisID].x).
+			    				  					attr("y2", childNode.displayNodes[thisID].y).
 			    				  					attr("stroke-width", 0.5).
 			    				  					attr("stroke", "black");
 			    				  
@@ -1463,10 +1462,10 @@ this.releaseAllFixed = function()
 {
 	for ( var x=0; x < nodes.length; x++)
 	{
-		if( ! nodes[x].userMoved)
+		if( ! nodes[x].displayNodes[thisID].userMoved)
 		{
-			nodes[x].fixed = false;
-			nodes[x].fixMeNextTime=false;
+			nodes[x].displayNodes[thisID].fixed = false;
+			nodes[x].displayNodes[thisID].fixMeNextTime=false;
 		}
 	}
 	
@@ -1501,15 +1500,15 @@ this.myMouseEnter = function(d)
 		statics.getHighlightedNode().highlight = false;			
 	}
 		
-	statics.setHighlightedNode(d);
-	d.highlight = true;
-	lastSelected = d;
+	statics.setHighlightedNode(d.myParentNode);
+	d.myParentNode.highlight = true;
+	lastSelected = d.myParentNode;
 	
 	infoPane = aDocument.getElementById("rightInfoArea")
 	
 	var someHTML = "<table>";
 	
-	for( prop in d)
+	for( prop in d.myParentNode)
 	{
 		if( prop != "forceTreeNodeID" 
 				&& prop != "x" 
@@ -1524,7 +1523,7 @@ this.myMouseEnter = function(d)
 						prop != "marked" && prop != "doNotShow" && prop != "listPosition" && prop != "px" &&
 						prop != "py" && prop != "weight" && prop != "aParentNode" && prop != "fixMeNextTime" )
 		{
-			var aVal = "" + d[prop];
+			var aVal = "" + d.myParentNode[prop];
 			
 			//todo: This will truncate long strings..
 			someHTML += ( "<tr><td>" +  prop + "</td><td> " + aVal.substring(0,25) + "</td></tr>" )
@@ -1558,8 +1557,8 @@ this.setInitialPositions = function ()
 {
 	var root = statics.getRoot();
 	
-	root.childNodes[thisID].x =  w / 2.0  + 20;
-	root.childNodes[thisID].y = h /2.0;
+	root.displayNodes[thisID].x =  w / 2.0  + 20;
+	root.displayNodes[thisID].y = h /2.0;
 	
 	var radius = Math.min(w,h)/2;
 	
@@ -1570,11 +1569,11 @@ this.setInitialPositions = function ()
 	for( var x=0; x < nodes.length; x++) 
 	{
 		var aRad = (parseFloat(nodes[x].nodeDepth)-1)/(statics.getMaxLevel()) * radius;
-		nodes[x].childNodes[thisID].x  = root.childNodes[thisID].x - aRad * Math.cos( piTwice * x/nodes.length) ;
-		nodes[x].childNodes[thisID].y  = aRad * Math.sin( piTwice * x/nodes.length) + root.childNodes[thisID].y;
+		nodes[x].displayNodes[thisID].x  = root.displayNodes[thisID].x - aRad * Math.cos( piTwice * x/nodes.length) ;
+		nodes[x].displayNodes[thisID].y  = aRad * Math.sin( piTwice * x/nodes.length) + root.displayNodes[thisID].y;
 	}
 	
-	root.fixed=true;
+	root.displayNodes[thisID].fixed=true;
 }
 
 this.arrangeForcePlot = function(arrangeChildren)
@@ -1623,7 +1622,7 @@ this.arrangeForcePlot = function(arrangeChildren)
 		if( nodesToRun[x].doNotShow==false)
 			numVisibleArray[nodesToRun[x].nodeDepth] = numVisibleArray[nodesToRun[x].nodeDepth]+ 1;
 		
-		nodesToRun[x].fixMeNextTime=false;
+		nodesToRun[x].displayNodes[thisID].fixMeNextTime=false;
 	}
 	
 	var root = lastSelected;
@@ -1633,8 +1632,8 @@ this.arrangeForcePlot = function(arrangeChildren)
 	if( ! root || ! arrangeChildren)
 	{
 		root = statics.getRoot();
-		root.childNodes[thisID].x =  w / 2.0  + 20.0;
-		root.childNodes[thisID].y = h /2.0;
+		root.displayNodes[thisID].x =  w / 2.0  + 20.0;
+		root.displayNodes[thisID].y = h /2.0;
 	}
 	
 	var radius = parseFloat( Math.min(w,h))/2.0;
@@ -1656,28 +1655,31 @@ this.arrangeForcePlot = function(arrangeChildren)
 	var range = parseFloat( statics.getMaxLevel() - localMinLevel)
 	for( var x=0; x < nodesToRun.length; x++) if( nodesToRun[x].doNotShow==false ) 
 	{
-		nodesToRun[x].childNodes[thisID].fixed=false;
-		nodesToRun[x].childNodes[thisID].userMoved = false;
+		nodesToRun[x].displayNodes[thisID].fixed=false;
+		nodesToRun[x].displayNodes[thisID].userMoved = false;
 		var aPosition = parseFloat(numAssignedArray[nodesToRun[x].nodeDepth])
 				/numVisibleArray[nodesToRun[x].nodeDepth];
 		
 		var aRad = (parseFloat(nodesToRun[x].nodeDepth)- localMinLevel)/range * radius;
-		nodesToRun[x].childNodes[thisID].x = root.childNodes[thisID].x - 
+		nodesToRun[x].displayNodes[thisID].x = root.displayNodes[thisID].x - 
 			aRad * Math.cos( piTwice * aPosition) ;
-		nodesToRun[x].childNodes[thisID].y  = aRad * Math.sin( piTwice *  aPosition) + root.childNodes[thisID].y;
+		nodesToRun[x].displayNodes[thisID].y  = aRad * Math.sin( piTwice *  aPosition) + root.displayNodes[thisID].y;
 		numAssignedArray[nodesToRun[x].nodeDepth] = numAssignedArray[nodesToRun[x].nodeDepth]+ 1;
-		nodesToRun[x].childNodes[thisID].fixMeNextTime= true;
+		nodesToRun[x].displayNodes[thisID].fixMeNextTime= true;
 	}
 	
 	if(  arrangeChildren &&  lastSelected)
 	{
-		lastSelected.childNodes[thisID].fixed=true;
-		lastSelected.childNodes[thisID].userMoved = true;
+		lastSelected.displayNodes[thisID].fixed=true;
+		lastSelected.displayNodes[thisID].userMoved = true;
 	}
 	
 	animationOn = false;
 	stopOnGrandChild = true;
 	stopOnChild = false;
+	
+	if( force )
+		force.start();
 
 }
 
@@ -1872,8 +1874,13 @@ this.flatten= function ()
 		nodes = statics.getNodes();
 		
   		for( var x=0; x < nodes.length; x++)
-  			nodes[x].childNodes[thisID] = {};
+  		{
+  			nodes[x].displayNodes[thisID] = {};
+  			nodes[x].displayNodes[thisID].myParentNode = nodes[x];
+  	  		
+  		}
   		
+  			
 		this.setInitialPositions();
   		this.addDynamicMenuContent();
   		
@@ -1910,19 +1917,37 @@ this.flatten= function ()
   	if (!myNodes[i].forceTreeNodeID) myNodes[i].forceTreeNodeID = i+1;
   	
   	myNodes[i].listPosition =i;
-  	myNodes[i].childNodes = {};
-  	myNodes[i].childNodes[thisID] = {};
-  	myNodes[i].childNodes[thisID].myParentNode = myNodes[i];
-  	myNodes[i].childNodes[thisID].myParentNode = myNodes[i].forceTreeNodeID;
+  	myNodes[i].displayNodes = {};
+  	myNodes[i].displayNodes[thisID] = {};
+  	myNodes[i].displayNodes[thisID].myParentNode = myNodes[i];
+  	myNodes[i].displayNodes[thisID].myParentNode = myNodes[i].forceTreeNodeID;
   	myNodes[i].xMapNoise = {};
   	myNodes[i].yMapNoise = {};
   }
   
+  function addChildrenToDisplayNode(aNode)
+  {
+	  if( ! aNode.children)
+		  return;
+	  
+	  aNode.displayNodes[thisID].children = [];
+	  
+	  for( var x=0; x < aNode.children.length; x++)
+	  {
+		  aNode.displayNodes[thisID].children.push(aNode.children[x].displayNodes[thisID]);
+		  addChildrenToDisplayNode(aNode.children[x]);
+	  }
+  }
+  
+  addChildrenToDisplayNode(statics.getRoot());
+  
   nodes = myNodes;
+  console.log(nodes);
   statics.setNodes(nodes);
+  statics.getRoot().displayNodes[thisID].fixed = true;
   
   for( var x=0; x < nodes.length; x++)
-	  nodes[x].fixMeNextTime =false;
+	  nodes[x].displayNodes[thisID].fixMeNextTime =false;
   
   this.setInitialPositions();
   this.addDynamicMenuContent();
@@ -1939,8 +1964,7 @@ if( isRunFromTopWindow )
 	d3.json(getQueryStrings(thisWindow)["FileToOpen"], function(json) 
 	{
   		statics.setRoot(json);
-  		statics.getRoot().fixed = true;
-  	thisContext.initialize();  // wait until the data is loaded to initialize
+  		thisContext.initialize();  // wait until the data is loaded to initialize
 	});
 }
 else
