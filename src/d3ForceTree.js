@@ -1549,8 +1549,8 @@ this.myMouseEnter = function(d)
 		statics.getHighlightedNode().highlight = false;			
 	}
 		
-	statics.setHighlightedNode(d);
-	d.highlight = true;
+	statics.setHighlightedNode(d.myParentNode);
+	d.myParentNode.highlight = true;
 	lastSelected = d;
 	
 	infoPane = aDocument.getElementById("rightInfoArea")
