@@ -1919,8 +1919,7 @@ this.flatten= function ()
   	myNodes[i].listPosition =i;
   	myNodes[i].displayNodes = {};
   	myNodes[i].displayNodes[thisID] = {};
-  	myNodes[i].displayNodes[thisID].myParentNode = myNodes[i];
-  	myNodes[i].displayNodes[thisID].myParentNode = myNodes[i].forceTreeNodeID;
+  	myNodes[i].displayNodes[thisID].myParentNode = myNodes[i];`
   	myNodes[i].xMapNoise = {};
   	myNodes[i].yMapNoise = {};
   }
