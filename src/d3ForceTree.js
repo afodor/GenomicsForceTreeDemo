@@ -14,17 +14,6 @@ function StaticHolder()
 		StaticHolder.highlightedNode=null;
 		StaticHolder.maxLevel = -1;
 		StaticHolder.highlightReverse=false;
-		StaticHolder.repopulatePrimary = false;
-	}
-	
-	this.setRepopulatePrimary = function( bool)
-	{
-		StaticHolder.repopulatePrimary = bool;
-	}
-	
-	this.getRepopulatePrimary = function()
-	{
-		return StaticHolder.repopulatePrimary;
 	}
 	
 	
@@ -303,15 +292,12 @@ this.reforce = function()
     {
     	if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
 		{
-
     		d.fixed=true; 
     		d.userMoved = true;
-    		d.myParentNode.xMap[thisID]=d.x ;
-    		d.myParentNode.yMap[thisID] = d.y ;
-    		//thisContext.update();
 		}
 		
 	}
+    
     
     drag = force.drag().on("dragstart", function(d) { if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
 	{
@@ -319,8 +305,6 @@ this.reforce = function()
     	{
     		force.stop();
     	}
-		d.x = d.myParentNode.xMap[thisID] ;
-		d.y= d.myParentNode.yMap[thisID] ;
 	} });
     drag = force.drag().on("drag", function(d) { aDrag(d) });
     
@@ -328,6 +312,7 @@ this.reforce = function()
     if( force ) 
 	{
 		force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
+		force.stop();
 	} 
     	thisContext.update(); });
 
@@ -571,10 +556,9 @@ this.reVisOne = function()
   				aDocument.getElementById("sizeByWhat").innerHTML += selectHTML
   				aDocument.getElementById("sortByWhat").innerHTML += selectHTML
   				
-  				if(propertyName != "xMap" 
-						&& propertyName != "yMap" 
-						&& propertyName != "xMapNoise"
-						&& propertyName != "yMapNoise")
+  				if(propertyName != "xMapNoise"
+						&& propertyName != "yMapNoise" &&
+						propertyName != "childNodes")
 					dataMenuHTML+=
 						"<li id=\"dataRange" + propertyName + "\"><a>" + propertyName   +" </a></li>"  
 						
@@ -854,11 +838,9 @@ this.isNumber = function (n) {
 
 this.getAVal = function (d, xAxis)
 {
-	d = d.myParentNode;
-
 	if( graphType == "ForceTree" )
 	{
-			return xAxis? d.xMap[thisID]: d.yMap[thisID];	
+			return xAxis? d.x: d.y;	
 	}
 	
 	chosen = null;
@@ -873,11 +855,13 @@ this.getAVal = function (d, xAxis)
 	}
 	
 	if( chosen == "circleX" )
-		return d.xMap[thisID];
+		return d.x;
 		
 	if( chosen == "circleY" ) 
-		return d.yMap[thisID];
-		
+		return d.y;
+	
+	d = d.childNodes[thisID].myParentNode;
+	
 	// quantitative scale 
 	if( statics.getRanges()[chosen] != null)
 	{	
@@ -1158,6 +1142,7 @@ this.update = function()
 	 		
 	 		if( addNoise )
 	 		{
+	 			/*
 	 			if( firstNoise)
 	 			{
 	 				nodes[i].xMapNoise  = nodes[i].xMap[thisID];
@@ -1181,6 +1166,7 @@ this.update = function()
 	 				
 	 			nodes[i].xMap[thisID] += noiseX;
 	 			nodes[i].yMap[thisID] += noiseY;
+	 			*/
 	 			
 	 		}
 	 	}
@@ -1199,25 +1185,16 @@ this.update = function()
 		
 		var filteredNodes = nodes.filter(this.myFilterNodes);	
 		
+		var newFilterNodes = [];
+		
+		for( var x=0; x < filteredNodes.length; x++ )
+			newFilterNodes.push(filteredNodes[x]);
+		
+		filteredNodes = newFilterNodes;
+		
 		for( var z=0; z < filteredNodes .length; z++)
 			filteredNodes[z].setVisible=true;
 
-		var newList = [];
-		
-		for( var x=0; x < filteredNodes.length; x++ )
-		{
-			var newVal = {};
-			newVal.x = filteredNodes[x].x;
-			newVal.y = filteredNodes[x].x;
-			newVal.setVisible = true;
-			newVal.fixed=filteredNodes[x].fixed;
-			newVal.userMoved = filteredNodes[x].userMoved;
-			newVal.myParentNode = filteredNodes[x];
-			newList.push(newVal);
-		}
-		
-		filteredNodes = newList;
-		
 		vis.selectAll("text").remove();
 		
 		if( graphType == "ForceTree") 
@@ -1239,8 +1216,8 @@ this.update = function()
       	force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
   
 	  var node = vis.selectAll("circle.node")
-	      .data(filteredNodes, function(d) {return d.myParentNode.forceTreeNodeID; } )
-	      .style("fill", function(d) { return d.myParentNode.thisNodeColor} )
+	      .data(filteredNodes, function(d) {return d.forceTreeNodeID; } )
+	      .style("fill", function(d) { return d.thisNodeColor} )
 	      .style("opacity",aDocument.getElementById("opacitySlider").value/100 );
 	
 	
@@ -1253,8 +1230,8 @@ this.update = function()
 	      .attr("cy", 
 					function (d){return thisContext.getAVal( d,false)}
 				)
-	      .attr("r", function(d) {  return d.myParentNode.thisNodeRadius})
-	      .style("fill", function(d) { return d.myParentNode.thisNodeColor}).
+	      .attr("r", function(d) {  return d.thisNodeRadius})
+	      .style("fill", function(d) { return d.thisNodeColor}).
 	      style("opacity",aDocument.getElementById("opacitySlider").value/100 ) 
 	     .on("mouseenter", this.myMouseEnter)
 	      .on("mouseleave", this.myMouseLeave)
@@ -1277,32 +1254,6 @@ this.update = function()
 	    	  {
 	    		  if( force)
 	    			  force.stop();
-	    	  }
-	    	  
-	    	  if( statics.getRepopulatePrimary() && isRunFromTopWindow &&  animationOn  )
-	    	  {
-	    		  for( var x=0; x < nodes.length; x++)
-	    		  {
-	    			  nodes[x].x =nodes[x].xMap[thisID];
-	    			  nodes[x].y= nodes[x].yMap[thisID];
-	    			  
-	    			  //todo: Fixed should be set for each window
-	    			  nodes[x].fixed = false;
-		    		  statics.setRepopulatePrimary(false);
-	    		  }
-	    	  }
-	    	  else if( graphType == "ForceTree"  &&  animationOn)
-	    	  {
-	    		  for( var x=0; x < nodes.length; x++)
-	    		  {
-	    			  nodes[x].xMap[thisID]   = nodes[x].x;
-	    			  nodes[x].yMap[thisID]   = nodes[x].y;
-	    		  }
-	    	  }
-	    	  
-	    	  if( ! isRunFromTopWindow )
-	    	  {
-	    		  statics.setRepopulatePrimary(true);
 	    	  }
 	    	  
 	      	 node.attr("cx", 
@@ -1342,18 +1293,17 @@ this.update = function()
 	      					*/
 	      		
 	      	text.attr("transform", function(d) { return "translate(" + 
-						d.xMap[thisID]
-							+ "," + d.yMap[thisID]+ ")"; });
+						d.x
+							+ "," + d.y+ ")"; });
 	      	}	      
 	      }
 			
 		if( graphType == "ForceTree"  && ! aDocument.getElementById("hideLinks").checked )
 		{
 				link.attr("x1", function(d) { return d.source.x; })
-	      .attr("x1", function(d) { return d.source.xMap[thisID]; })
-	      .attr("y1", function(d) { return d.source.yMap[thisID]; })
-	      .attr("x2", function(d) { return d.target.xMap[thisID]; })
-	      .attr("y2", function(d) { return d.target.yMap[thisID]; });
+	      .attr("y1", function(d) { return d.source.y; })
+	      .attr("x2", function(d) { return d.target.x; })
+	      .attr("y2", function(d) { return d.target.y; });
 		}
 		
 		  	thisContext.checkForStop();
@@ -1378,10 +1328,10 @@ this.update = function()
 		    				  
 		    				  if( ! childNode.doNotShow)
 		    				  {
-			    				  vis.append("line").attr("x1", aNode.xMap[thisID]).
-			    				  					attr("y1", aNode.yMap[thisID]).
-			    				  					attr("x2", childNode.xMap[thisID]).
-			    				  					attr("y2", childNode.yMap[thisID]).
+			    				  vis.append("line").attr("x1", aNode.childNodes[thisID].x).
+			    				  					attr("y1", aNode.childNodes[thisID].y).
+			    				  					attr("x2", childNode.childNodes[thisID].x).
+			    				  					attr("y2", childNode.childNodes[thisID].y).
 			    				  					attr("stroke-width", 0.5).
 			    				  					attr("stroke", "black");
 			    				  
@@ -1542,7 +1492,7 @@ this.getTextColor= function(d)
 
 this.myMouseEnter = function(d)
 {
-	
+
 	if (! aDocument.getElementById("mouseOverHighlights").checked)
 		return;
 	
@@ -1551,15 +1501,15 @@ this.myMouseEnter = function(d)
 		statics.getHighlightedNode().highlight = false;			
 	}
 		
-	statics.setHighlightedNode(d.myParentNode);
-	d.myParentNode.highlight = true;
-	lastSelected = d.myParentNode;
+	statics.setHighlightedNode(d);
+	d.highlight = true;
+	lastSelected = d;
 	
 	infoPane = aDocument.getElementById("rightInfoArea")
 	
 	var someHTML = "<table>";
 	
-	for( prop in d.myParentNode)
+	for( prop in d)
 	{
 		if( prop != "forceTreeNodeID" 
 				&& prop != "x" 
@@ -1574,7 +1524,7 @@ this.myMouseEnter = function(d)
 						prop != "marked" && prop != "doNotShow" && prop != "listPosition" && prop != "px" &&
 						prop != "py" && prop != "weight" && prop != "aParentNode" && prop != "fixMeNextTime" )
 		{
-			var aVal = "" + d.myParentNode[prop];
+			var aVal = "" + d[prop];
 			
 			//todo: This will truncate long strings..
 			someHTML += ( "<tr><td>" +  prop + "</td><td> " + aVal.substring(0,25) + "</td></tr>" )
@@ -1608,8 +1558,8 @@ this.setInitialPositions = function ()
 {
 	var root = statics.getRoot();
 	
-	root.xMap[thisID] =  w / 2.0  + 20;
-	root.yMap[thisID] = h /2.0;
+	root.childNodes[thisID].x =  w / 2.0  + 20;
+	root.childNodes[thisID].y = h /2.0;
 	
 	var radius = Math.min(w,h)/2;
 	
@@ -1620,8 +1570,8 @@ this.setInitialPositions = function ()
 	for( var x=0; x < nodes.length; x++) 
 	{
 		var aRad = (parseFloat(nodes[x].nodeDepth)-1)/(statics.getMaxLevel()) * radius;
-		nodes[x].xMap[thisID]  = root.xMap[thisID]- aRad * Math.cos( piTwice * x/nodes.length) ;
-		nodes[x].yMap[thisID]  = aRad * Math.sin( piTwice * x/nodes.length) + root.yMap[thisID];
+		nodes[x].childNodes[thisID].x  = root.childNodes[thisID].x - aRad * Math.cos( piTwice * x/nodes.length) ;
+		nodes[x].childNodes[thisID].y  = aRad * Math.sin( piTwice * x/nodes.length) + root.childNodes[thisID].y;
 	}
 	
 	root.fixed=true;
@@ -1629,6 +1579,9 @@ this.setInitialPositions = function ()
 
 this.arrangeForcePlot = function(arrangeChildren)
 {
+	if( force)
+		force.stop();
+	
 	numVisibleArray = [];
 	numAssignedArray = [];
 	
@@ -1680,8 +1633,8 @@ this.arrangeForcePlot = function(arrangeChildren)
 	if( ! root || ! arrangeChildren)
 	{
 		root = statics.getRoot();
-		root.xMap[thisID] =  w / 2.0  + 20.0;
-		root.yMap[thisID] = h /2.0;
+		root.childNodes[thisID].x =  w / 2.0  + 20.0;
+		root.childNodes[thisID].y = h /2.0;
 	}
 	
 	var radius = parseFloat( Math.min(w,h))/2.0;
@@ -1703,35 +1656,29 @@ this.arrangeForcePlot = function(arrangeChildren)
 	var range = parseFloat( statics.getMaxLevel() - localMinLevel)
 	for( var x=0; x < nodesToRun.length; x++) if( nodesToRun[x].doNotShow==false ) 
 	{
-		nodesToRun[x].fixed=false;
-		nodesToRun[x].userMoved = false;
+		nodesToRun[x].childNodes[thisID].fixed=false;
+		nodesToRun[x].childNodes[thisID].userMoved = false;
 		var aPosition = parseFloat(numAssignedArray[nodesToRun[x].nodeDepth])
 				/numVisibleArray[nodesToRun[x].nodeDepth];
 		
 		var aRad = (parseFloat(nodesToRun[x].nodeDepth)- localMinLevel)/range * radius;
-		nodesToRun[x].xMap[thisID] = root.xMap[thisID]- 
+		nodesToRun[x].childNodes[thisID].x = root.childNodes[thisID].x - 
 			aRad * Math.cos( piTwice * aPosition) ;
-		nodesToRun[x].yMap[thisID]  = aRad * Math.sin( piTwice *  aPosition) + root.yMap[thisID];
+		nodesToRun[x].childNodes[thisID].y  = aRad * Math.sin( piTwice *  aPosition) + root.childNodes[thisID].y;
 		numAssignedArray[nodesToRun[x].nodeDepth] = numAssignedArray[nodesToRun[x].nodeDepth]+ 1;
-		nodesToRun[x].fixMeNextTime= true;
-		nodesToRun[x].x = nodesToRun[x].xMap[thisID];
-		nodesToRun[x].y = nodesToRun[x].yMap[thisID];
+		nodesToRun[x].childNodes[thisID].fixMeNextTime= true;
 	}
 	
 	if(  arrangeChildren &&  lastSelected)
 	{
-		lastSelected.fixed=true;
-		lastSelected.userMoved = true;
+		lastSelected.childNodes[thisID].fixed=true;
+		lastSelected.childNodes[thisID].userMoved = true;
 	}
 	
 	animationOn = false;
 	stopOnGrandChild = true;
 	stopOnChild = false;
 
-	if( force ) 
-	{
-		force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
-	}
 }
 
 
@@ -1924,6 +1871,10 @@ this.flatten= function ()
 		nodes = statics.getNodes();
 		this.setInitialPositions();
   		this.addDynamicMenuContent();
+  		
+  		for( var x=0; x < nodes.length; x++)
+  			myNodes[i].childNodes[thisID] = {};
+  		
   		return;
 	}
 
@@ -1957,8 +1908,10 @@ this.flatten= function ()
   	if (!myNodes[i].forceTreeNodeID) myNodes[i].forceTreeNodeID = i+1;
   	
   	myNodes[i].listPosition =i;
-  	myNodes[i].xMap = {};
-  	myNodes[i].yMap = {};
+  	myNodes[i].childNodes = {};
+  	myNodes[i].childNodes[thisID] = {};
+  	myNodes[i].childNodes[thisID].myParentNode = myNodes[i];
+  	myNodes[i].childNodes[thisID].myParentNode = myNodes[i].forceTreeNodeID;
   	myNodes[i].xMapNoise = {};
   	myNodes[i].yMapNoise = {};
   }
