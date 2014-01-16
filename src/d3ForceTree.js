@@ -356,30 +356,38 @@ this.getDisplayDataset = function()
 	
 	var index =0;
 	
-	function addNodeAndChildren(aNode)
+	function addAndReturnChild(aNode, childIndex)
 	{
-		var parentDisplayNode = {};
-		parentDisplayNode.name = index;
-		parentDisplayNode.parentDataNode = aNode;
+		var newChildNode = aNode.children[childIndex];
+		var newDisplayNode= {};
+		newDisplayNode.name = index;
 		index++;
-		displayDasaset .nodes.push(parentDisplayNode);
+		newDisplayNode.fixed = true;
+		displayDasaset.nodes.push(newDisplayNode);
+		newDisplayNode.parentDataNode = newChildNode;
 		
-		if( aNode.children)
+		if( newChildNode.children)
 		{
-			parentDisplayNode.children=[];
-			for( var x=0; x < aNode.children.length; x++)
+			newDisplayNode.children=[];
+			for( var x=0; x < newChildNode.children.length; x++)
 			{
-				var childDisplayNode = {};
-				childDisplayNode.name = index;
-				childDisplayNode.parentDataNode = aNode.children[x];
-				index++;
-				parentDisplayNode.children.push(childDisplayNode);
-				addNodeAndChildren(aNode.children[x]);
+				newDisplayNode.children.push( addAndReturnChild(newChildNode, x) );
 			}
 		}
+		
+		return newDisplayNode;
 	}
 	
-	addNodeAndChildren(statics.getRoot());
+	var rootDisplayNode = {};
+	rootDisplayNode.name = index;
+	index++;
+	rootDisplayNode.fixed= false;
+	displayDasaset.nodes.push(rootDisplayNode);
+	rootDisplayNode.parentDataNode = statics.getRoot();
+	rootDisplayNode.children = [];
+	
+	for( var x=0; x < statics.getRoot().children.length; x++)
+		rootDisplayNode.children.push( addAndReturnChild(statics.getRoot(), x) );
 	
 	return displayDasaset;
 	
@@ -1717,7 +1725,7 @@ this.arrangeForcePlot = function(arrangeChildren)
 	for( var x=0; x < displayNodes.length; x++)
 	{
 		displayNodes[x].fixed =false;
-		dispalyNodes[x].fixMeNextTime = true;
+		displayNodes[x].fixMeNextTime = true;
 		
 		if(  arrangeChildren &&  lastSelected == displayNodes[x].parentDataNode )
 		{
@@ -1986,7 +1994,6 @@ if( isRunFromTopWindow )
 	d3.json(getQueryStrings(thisWindow)["FileToOpen"], function(json) 
 	{
   		statics.setRoot(json);
-  		statics.getRoot().fixed = true;
   	thisContext.initialize();  // wait until the data is loaded to initialize
 	});
 }
