@@ -146,7 +146,6 @@ var firstNoise = true;
 var dataNames = [];
 var lastSelected = null;
 var animationOn=false;
-var propogateArrange=true;
 
 var stopOnGrandChild = false;
 var stopOnChild = false;
@@ -279,11 +278,7 @@ this.makeDirty = function()
 
 this.reforce = function()
 {
-	if( force != null ) 
-	{
-		force.stop();
-	}
-	
+
 	this.setWidthAndHeight();
 	
     force = d3.layout.force()
@@ -291,33 +286,18 @@ this.reforce = function()
     .linkDistance(function(d) { return d.target._children ? 80 * (d.nodeDepth-16)/16 : 30; })
     .size([w, h - 60]).gravity(aDocument.getElementById("gravitySlider").value/100)
     
-    aDrag = function(d)
-    {
+    
+    drag = force.drag().on("dragstart", function(d) { if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
+	{
     	if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
 		{
     		d.fixed=true; 
     		d.userMoved = true;
 		}
-		
-	}
-    
-    
-    drag = force.drag().on("dragstart", function(d) { if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
-	{
-    	if( force ) 
-    	{
-    		force.stop();
-    	}
-	} });
-    drag = force.drag().on("drag", function(d) { aDrag(d) });
-    
-    drag = force.drag().on("dragend", function(d) { 
-    if( force ) 
-	{
-		force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
-	} 
-    	thisContext.update(); });
 
+	} });
+    
+    
     if( graphType != "ForceTree")
     {
     	vis = d3.select("body").append("svg:svg")
@@ -455,7 +435,6 @@ this.reVis = function(revisAll)
 this.reVisOne = function() 
 {
 	
-	this.checkForStop()
 	this.setWidthAndHeight();
 	this.setInitialPositions();
 	vis.remove();
@@ -1287,15 +1266,13 @@ this.update = function()
 	    	  {
 	    		  stopOnChild = true;
 	    		  stopOnGrandChild = false;
-	    		  propogateArrange=false;
 	    	  } else if (stopOnChild)
 	    	  {
-	    		  if( force)
+	    		  if( force && !animationOn )
 	    			  force.stop();
-	    		  propogateArrange=true;
 	    	  }
 	    	  
-	  		if( propogateArrange)
+	  		if( stopOnChild)
 	  		{
 	  			var dataset = thisContext.getDisplayDataset();
 	  			
@@ -1304,8 +1281,6 @@ this.update = function()
 	  				dataset.nodes[x].x = dataset.nodes[x].parentDataNode.x
 	  				dataset.nodes[x].y = dataset.nodes[x].parentDataNode.y
 	  			}
-	  			
-	  			propogateArrange = false;
 	  		}
 	  		
 	    	  	    
@@ -1358,7 +1333,6 @@ this.update = function()
 	      .attr("y2", function(d) { return d.target.y; });
 		}
 		
-		  	thisContext.checkForStop();
 	      }
 	      
 	      if( graphType != "ForceTree"  && ! aDocument.getElementById("hideLinks").checked
@@ -1398,8 +1372,6 @@ this.update = function()
 		          addNodeAndChildren(statics.getRoot());
 		    		  
 			}
-			
-	    thisContext.checkForStop();
 		
 		force.on("tick", updateNodesLinksText);
 		
@@ -1486,8 +1458,7 @@ this.update = function()
   node.exit().remove();
 	}
   	
-  	this.checkForStop();
-  	// the color choosers don't work unless they are initialized first
+	// the color choosers don't work unless they are initialized first
   	// hence they are initialized in the "section" and then moved to the appropriate menu
   	// once everything else has settled in...
 	if( firstUpdate && isRunFromTopWindow) 
@@ -1503,13 +1474,6 @@ this.update = function()
   	firstUpdate = false;
 }
 
-this.checkForStop =function()
-{
-	
-	if ( graphType != "ForceTree" )
-  		force.stop();
-	
-}
 
 this.releaseAllFixed = function()
 {
@@ -1521,12 +1485,15 @@ this.releaseAllFixed = function()
 		{
 			displayNodes[x].fixed = false;
 			displayNodes[x].fixMeNextTime=false;
+			displayNodes[x].x = displayNodes[x].parentDataNode.x;
+			displayNodes[x].y= displayNodes[x].parentDataNode.y;
 		}
 	}
 	
 	animationOn=true;
-	stopOnGrandChild = false;
+	stopOnGrandChild = true;
 	stopOnChild = false;
+	
 	this.redrawScreen();
 }
 
@@ -1744,8 +1711,6 @@ this.arrangeForcePlot = function(arrangeChildren)
 	{
 		force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
 	}
-	
-	propogateArrange = true;
 	
 }
 
