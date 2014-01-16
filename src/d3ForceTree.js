@@ -307,7 +307,6 @@ this.reforce = function()
     {
     	if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
 		{
-
     		d.fixed=true; 
     		d.userMoved = true;
 		}
@@ -1282,7 +1281,7 @@ this.update = function()
   
 	  var node = vis.selectAll("circle.node")
 	      .data(filteredNodes, function(d) {return d.name; } )
-	      .style("fill", function(d) { return d.thisNodeColor} )
+	      .style("fill", function(d) { return d.parentDataNode.thisNodeColor} )
 	      .style("opacity",aDocument.getElementById("opacitySlider").value/100 );
 	
 	
@@ -1591,7 +1590,9 @@ this.myMouseEnter = function(d)
 	{
 		statics.getHighlightedNode().highlight = false;			
 	}
-		
+	
+	d = d.parentDataNode 
+	
 	statics.setHighlightedNode(d);
 	d.highlight = true;
 	lastSelected = d;
