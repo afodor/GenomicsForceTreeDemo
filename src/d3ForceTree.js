@@ -1,4 +1,4 @@
-
+ 
 function StaticHolder()
 {
 	if( !StaticHolder.ranges)
