@@ -1278,8 +1278,8 @@ this.update = function()
 	  			
 	  			for( var x=0; x < dataset.nodes.length; x++)
 	  			{
-	  				dataset.nodes[x].x = dataset.nodes[x].parentDataNode.x
-	  				dataset.nodes[x].y = dataset.nodes[x].parentDataNode.y
+	  				dataset.nodes[x].x = dataset.nodes[x].parentDataNode.xMap[thisID]
+	  				dataset.nodes[x].y = dataset.nodes[x].parentDataNode.yMap[thisID]
 	  			}
 	  		}
 	  		
@@ -1485,8 +1485,8 @@ this.releaseAllFixed = function()
 		{
 			displayNodes[x].fixed = false;
 			displayNodes[x].fixMeNextTime=false;
-			displayNodes[x].x = displayNodes[x].parentDataNode.x;
-			displayNodes[x].y= displayNodes[x].parentDataNode.y;
+			displayNodes[x].x = displayNodes[x].parentDataNode.xMap[thisID];
+			displayNodes[x].y= displayNodes[x].parentDataNode.yMap[thisID];
 		}
 	}
 	
@@ -1698,8 +1698,6 @@ this.arrangeForcePlot = function(arrangeChildren)
 			aRad * Math.cos( piTwice * aPosition) ;
 		nodesToRun[x].yMap[thisID]  = aRad * Math.sin( piTwice *  aPosition) + root.yMap[thisID];
 		numAssignedArray[nodesToRun[x].nodeDepth] = numAssignedArray[nodesToRun[x].nodeDepth]+ 1;
-		nodesToRun[x].x = nodesToRun[x].xMap[thisID];
-		nodesToRun[x].y = nodesToRun[x].yMap[thisID];
 	}
 	
 
