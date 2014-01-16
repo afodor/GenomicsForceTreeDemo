@@ -349,12 +349,10 @@ this.zoom = function() {
 
 this.getDisplayDataset = function()
 {
-
 	if(  displayDasaset)
 		return displayDasaset;
 
-	displayDasaset = { nodes : [] ,
-					edges: []}; 
+	displayDasaset = { nodes : [] }; 
 	
 	var index =0;
 	
@@ -368,16 +366,14 @@ this.getDisplayDataset = function()
 		
 		if( aNode.children)
 		{
+			parentDisplayNode.children=[];
 			for( var x=0; x < aNode.children.length; x++)
 			{
 				var childDisplayNode = {};
 				childDisplayNode.name = index;
 				childDisplayNode.parentDataNode = aNode.children[x];
 				index++;
-				var anEdge = {};
-				anEdge.source = parentDisplayNode.name;
-				anEdge.target = childDisplayNode.name;
-				displayDasaset.edges.push(anEdge);
+				parentDisplayNode.children.push(childDisplayNode);
 				addNodeAndChildren(aNode.children[x]);
 			}
 		}
@@ -1248,26 +1244,25 @@ this.update = function()
 
 		vis.selectAll("text").remove();
 		
-		if( graphType == "ForceTree") 
-		{
-			links = d3.layout.tree().links(thisContext.getDisplayDataset().edges);
-		}
-		
 		//console.log(filteredNodes);
 		
   	// Restart the force layout.
  	 
  	 if( graphType == "ForceTree"  ) 
- 	 force
-      .nodes(nodes)
-      
-      if( graphType == "ForceTree" 
-      			&& ! aDocument.getElementById("hideLinks").checked )
-      force.links(links)
-      
-      if( graphType == "ForceTree" )
-      	force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
-  
+ 	 {
+ 		force.nodes(filteredNodes);
+ 	      
+ 		if(! aDocument.getElementById("hideLinks").checked )
+ 		{
+ 			links = d3.layout.tree().links(filteredNodes);
+ 			force.links(links)  
+ 		}
+ 		
+
+		force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
+ 	 }
+ 	 
+      	
 	  var node = vis.selectAll("circle.node")
 	      .data(filteredNodes, function(d) {return d.name; } )
 	      .style("fill", function(d) { return d.parentDataNode.thisNodeColor} )
