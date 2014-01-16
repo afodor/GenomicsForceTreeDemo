@@ -162,7 +162,7 @@ var propogateArrange=false;
 
 var stopOnGrandChild = false;
 var stopOnChild = false;
-
+var displayDasaset= null; 
 
 
 
@@ -310,9 +310,6 @@ this.reforce = function()
 
     		d.fixed=true; 
     		d.userMoved = true;
-    		d.xMap[thisID]=d.x ;
-    		d.yMap[thisID] = d.y ;
-    		//thisContext.update();
 		}
 		
 	}
@@ -324,8 +321,6 @@ this.reforce = function()
     	{
     		force.stop();
     	}
-		d.x = d.xMap[thisID] ;
-		d.y= d.yMap[thisID] ;
 	} });
     drag = force.drag().on("drag", function(d) { aDrag(d) });
     
@@ -367,7 +362,11 @@ this.zoom = function() {
 
 this.getDisplayDataset = function()
 {
-	var dataset = { nodes : [] ,
+
+	if(  displayDasaset)
+		return displayDasaset;
+
+	displayDasaset = { nodes : [] ,
 					edges: []}; 
 	
 	var index =0;
@@ -378,7 +377,7 @@ this.getDisplayDataset = function()
 		parentDisplayNode.name = index;
 		parentDisplayNode.parentDataNode = aNode;
 		index++;
-		dataset.nodes.push(parentDisplayNode);
+		displayDasaset .nodes.push(parentDisplayNode);
 		
 		if( aNode.children)
 		{
@@ -391,7 +390,7 @@ this.getDisplayDataset = function()
 				var anEdge = {};
 				anEdge.source = parentDisplayNode.name;
 				anEdge.target = childDisplayNode.name;
-				dataset.edges.push(anEdge);
+				displayDasaset.edges.push(anEdge);
 				addNodeAndChildren(aNode.children[x]);
 			}
 		}
@@ -399,18 +398,7 @@ this.getDisplayDataset = function()
 	
 	addNodeAndChildren(statics.getRoot());
 	
-	if( propogateArrange)
-	{
-		for( var x=0; x < dataset.nodes.length; x++)
-		{
-			dataset.nodes[x].x = dataset.nodes[x].parentDataNode.x
-			dataset.nodes[x].y = dataset.nodes[x].parentDataNode.y
-		}
-		
-	}
-	
-	propogateArrange = false;
-	return dataset;
+	return displayDasaset;
 	
 }
 
@@ -876,13 +864,12 @@ this.getLabelText = function(d)
 
 this.myFilterNodes = function(d)
 {
-	 if( ! d.parentDataNode)
+	 if( ! d.parentDataNode.setVisible  )
 	 	return true;
 	 	
 	 return false;
 }
 
-/*
 this.myFilterLinks= function(d)
 {
      if( d.source.parentDataNode.setVisible  && d.target.parentDataNode.setVisible)
@@ -890,7 +877,7 @@ this.myFilterLinks= function(d)
       	
       return false;
       		
-}*/
+}
 
 this.gravityAdjust = function()
 {
@@ -1251,8 +1238,22 @@ this.update = function()
 		for( var z=0; z < nodes.length; z++)
 			nodes[z].setVisible=false;
 		
+		if( propogateArrange)
+		{
+			var dataset = thisContext.getDisplayDataset();
+			
+			for( var x=0; x < dataset.nodes.length; x++)
+			{
+				dataset.nodes[x].x = dataset.nodes[x].parentDataNode.x
+				dataset.nodes[x].y = dataset.nodes[x].parentDataNode.y
+			}
+			
+			propogateArrange = false;
+		}
 		
-		var filteredNodes = thisContext.getDisplayDataset();
+		
+		
+		var filteredNodes = thisContext.getDisplayDataset().nodes.filter(thisContext.myFilterNodes)
 		
 		for( var z=0; z < filteredNodes .length; z++)
 			filteredNodes[z].setVisible=true;
@@ -1261,10 +1262,10 @@ this.update = function()
 		
 		if( graphType == "ForceTree") 
 		{
-			links = d3.layout.tree().links(filteredNodes.edges);
+			links = d3.layout.tree().links(thisContext.getDisplayDataset().edges);
 		}
 		
-		console.log(filteredNodes);
+		//console.log(filteredNodes);
 		
   	// Restart the force layout.
  	 
@@ -1280,7 +1281,7 @@ this.update = function()
       	force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
   
 	  var node = vis.selectAll("circle.node")
-	      .data(filteredNodes.nodes, function(d) {return d.name; } )
+	      .data(filteredNodes, function(d) {return d.name; } )
 	      .style("fill", function(d) { return d.thisNodeColor} )
 	      .style("opacity",aDocument.getElementById("opacitySlider").value/100 );
 	
