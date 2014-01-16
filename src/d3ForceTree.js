@@ -1711,13 +1711,20 @@ this.arrangeForcePlot = function(arrangeChildren)
 		nodesToRun[x].y = nodesToRun[x].yMap[thisID];
 	}
 	
-	/*
-	if(  arrangeChildren &&  lastSelected)
+
+	var displayNodes = this.getDisplayDataset().nodes;
+	
+	for( var x=0; x < displayNodes.length; x++)
 	{
-		lastSelected.fixed=true;
-		lastSelected.userMoved = true;
+		displayNodes[x].fixed =false;
+		dispalyNodes[x].fixMeNextTime = true;
+		
+		if(  arrangeChildren &&  lastSelected == displayNodes[x].parentDataNode )
+		{
+			displayNodes[x].fixed=true;
+			displayNodes[x].userMoved = true;
+		}
 	}
-	*/
 	
 	animationOn = false;
 	stopOnGrandChild = true;
@@ -1963,9 +1970,6 @@ this.flatten= function ()
   
   nodes = myNodes;
   statics.setNodes(nodes);
-  
-  for( var x=0; x < nodes.length; x++)
-	  nodes[x].fixMeNextTime =false;
   
   this.setInitialPositions();
   this.addDynamicMenuContent();
