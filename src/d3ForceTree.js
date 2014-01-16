@@ -868,7 +868,7 @@ this.getAVal = function (d, xAxis)
 {
 	if( graphType == "ForceTree" )
 	{
-			return xAxis? d.x: d.y;	
+		return xAxis? d.x: d.y;	
 	}
 	
 	d = d.parentDataNode;
@@ -1262,6 +1262,7 @@ this.update = function()
 	      	
 	      function updateNodesLinksText()
 	      {
+	    	  console.log("in update " + thisContext.getDisplayDataset().nodes[0].x + " "+thisContext.getDisplayDataset().nodes[0].fixed);
 	    	  if( stopOnGrandChild)
 	    	  {
 	    		  stopOnChild = true;
@@ -1285,8 +1286,14 @@ this.update = function()
 	  		
 	    	  	    
 	    	 node.attr("cx", 
-					function (d){return thisContext.getAVal( d,true)}
-				)
+					function (d){ 
+	    		 			if( d.parentDataNode == statics.getRoot() )
+	    		 			{ 
+	    		 				console.log("In cx " +thisContext.getAVal( d,true))
+	    		 			} 
+	    		 				return thisContext.getAVal( d,true)
+	    		 			}
+	    		 		)
 	      	.attr("cy", 
 	      			
 					function (d){
@@ -1327,7 +1334,7 @@ this.update = function()
 			
 		if( graphType == "ForceTree"  && ! aDocument.getElementById("hideLinks").checked )
 		{
-				link.attr("x1", function(d) { return d.source.x; })
+			link.attr("x1", function(d) { return d.source.x; })
 	      .attr("y1", function(d) { return d.source.y; })
 	      .attr("x2", function(d) { return d.target.x; })
 	      .attr("y2", function(d) { return d.target.y; });
