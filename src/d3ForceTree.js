@@ -1230,19 +1230,6 @@ this.update = function()
 		for( var z=0; z < nodes.length; z++)
 			nodes[z].setVisible=false;
 		
-		if( propogateArrange)
-		{
-			var dataset = thisContext.getDisplayDataset();
-			
-			for( var x=0; x < dataset.nodes.length; x++)
-			{
-				dataset.nodes[x].x = dataset.nodes[x].parentDataNode.x
-				dataset.nodes[x].y = dataset.nodes[x].parentDataNode.y
-			}
-			
-			propogateArrange = false;
-		}
-		
 		
 		
 		var filteredNodes = thisContext.getDisplayDataset().nodes.filter(thisContext.myFilterNodes)
@@ -1300,11 +1287,27 @@ this.update = function()
 	    	  {
 	    		  stopOnChild = true;
 	    		  stopOnGrandChild = false;
+	    		  propogateArrange=false;
 	    	  } else if (stopOnChild)
 	    	  {
 	    		  if( force)
 	    			  force.stop();
+	    		  propogateArrange=true;
 	    	  }
+	    	  
+	  		if( propogateArrange)
+	  		{
+	  			var dataset = thisContext.getDisplayDataset();
+	  			
+	  			for( var x=0; x < dataset.nodes.length; x++)
+	  			{
+	  				dataset.nodes[x].x = dataset.nodes[x].parentDataNode.x
+	  				dataset.nodes[x].y = dataset.nodes[x].parentDataNode.y
+	  			}
+	  			
+	  			propogateArrange = false;
+	  		}
+	  		
 	    	  	    
 	    	 node.attr("cx", 
 					function (d){return thisContext.getAVal( d,true)}
@@ -1632,6 +1635,20 @@ this.setInitialPositions = function ()
 
 this.arrangeForcePlot = function(arrangeChildren)
 {
+	var displayNodes = this.getDisplayDataset().nodes;
+	
+	for( var x=0; x < displayNodes.length; x++)
+	{
+		displayNodes[x].fixed =false;
+		displayNodes[x].fixMeNextTime = true;
+		
+		if(  arrangeChildren &&  lastSelected == displayNodes[x].parentDataNode )
+		{
+			displayNodes[x].fixed=true;
+			displayNodes[x].userMoved = true;
+		}
+	}
+	
 	numVisibleArray = [];
 	numAssignedArray = [];
 	
@@ -1714,26 +1731,11 @@ this.arrangeForcePlot = function(arrangeChildren)
 			aRad * Math.cos( piTwice * aPosition) ;
 		nodesToRun[x].yMap[thisID]  = aRad * Math.sin( piTwice *  aPosition) + root.yMap[thisID];
 		numAssignedArray[nodesToRun[x].nodeDepth] = numAssignedArray[nodesToRun[x].nodeDepth]+ 1;
-		nodesToRun[x].fixMeNextTime= true;
 		nodesToRun[x].x = nodesToRun[x].xMap[thisID];
 		nodesToRun[x].y = nodesToRun[x].yMap[thisID];
 	}
 	
 
-	var displayNodes = this.getDisplayDataset().nodes;
-	
-	for( var x=0; x < displayNodes.length; x++)
-	{
-		displayNodes[x].fixed =false;
-		displayNodes[x].fixMeNextTime = true;
-		
-		if(  arrangeChildren &&  lastSelected == displayNodes[x].parentDataNode )
-		{
-			displayNodes[x].fixed=true;
-			displayNodes[x].userMoved = true;
-		}
-	}
-	
 	animationOn = false;
 	stopOnGrandChild = true;
 	stopOnChild = false;
