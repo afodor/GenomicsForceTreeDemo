@@ -146,7 +146,7 @@ var firstNoise = true;
 var dataNames = [];
 var lastSelected = null;
 var animationOn=false;
-var propogateArrange=false;
+var propogateArrange=true;
 
 var stopOnGrandChild = false;
 var stopOnChild = false;
@@ -883,11 +883,12 @@ this.isNumber = function (n) {
 
 this.getAVal = function (d, xAxis)
 {
-
 	if( graphType == "ForceTree" )
 	{
 			return xAxis? d.x: d.y;	
 	}
+	
+	d = d.parentDataNode;
 	
 	chosen = null;
 	
@@ -1276,12 +1277,6 @@ this.update = function()
 	  // Enter any new nodes.
 	 node.enter().append("svg:circle").on("click", this.myClick)
 	      .attr("class", "node")
-	      .attr("cx", 
-					function (d){return thisContext.getAVal( d,true)}
-				)
-	      .attr("cy", 
-					function (d){return thisContext.getAVal( d,false)}
-				)
 	      .attr("r", function(d) {  return d.parentDataNode.thisNodeRadius})
 	      .style("fill", function(d) { return d.parentDataNode.thisNodeColor}).
 	      style("opacity",aDocument.getElementById("opacitySlider").value/100 ) 
@@ -1307,8 +1302,8 @@ this.update = function()
 	    		  if( force)
 	    			  force.stop();
 	    	  }
-	    	  	    	  
-	      	 node.attr("cx", 
+	    	  	    
+	    	 node.attr("cx", 
 					function (d){return thisContext.getAVal( d,true)}
 				)
 	      	.attr("cy", 
@@ -1319,9 +1314,8 @@ this.update = function()
 	      						d.fixed=true;
 	      						d.fixMeNextTime=false;
 	      					}
-	      					
 	      						
-	      		return thisContext.getAVal( d,false)}
+	      					return thisContext.getAVal( d,false)}
 				)
 	    
 		  if ( anyLabels )
@@ -1513,12 +1507,14 @@ this.checkForStop =function()
 
 this.releaseAllFixed = function()
 {
-	for ( var x=0; x < nodes.length; x++)
+	var displayNodes = this.getDisplayDataset().nodes;
+	
+	for ( var x=0; x < displayNodes.length; x++)
 	{
-		if( ! nodes[x].userMoved)
+		if( ! displayNodes[x].userMoved)
 		{
-			nodes[x].fixed = false;
-			nodes[x].fixMeNextTime=false;
+			displayNodes[x].fixed = false;
+			displayNodes[x].fixMeNextTime=false;
 		}
 	}
 	
@@ -1707,8 +1703,6 @@ this.arrangeForcePlot = function(arrangeChildren)
 	var range = parseFloat( statics.getMaxLevel() - localMinLevel)
 	for( var x=0; x < nodesToRun.length; x++) if( nodesToRun[x].doNotShow==false ) 
 	{
-		nodesToRun[x].fixed=false;
-		nodesToRun[x].userMoved = false;
 		var aPosition = parseFloat(numAssignedArray[nodesToRun[x].nodeDepth])
 				/numVisibleArray[nodesToRun[x].nodeDepth];
 		
@@ -1722,11 +1716,13 @@ this.arrangeForcePlot = function(arrangeChildren)
 		nodesToRun[x].y = nodesToRun[x].yMap[thisID];
 	}
 	
+	/*
 	if(  arrangeChildren &&  lastSelected)
 	{
 		lastSelected.fixed=true;
 		lastSelected.userMoved = true;
 	}
+	*/
 	
 	animationOn = false;
 	stopOnGrandChild = true;
