@@ -845,7 +845,7 @@ this.getLabelText = function(d)
 
 this.myFilterNodes = function(d)
 {
-	 if( ! d.parentDataNode.doNotShow)
+	 if( d.parentDataNode.doNotShow == false)
 	 	return true;
 	 	
 	 return false;
@@ -853,7 +853,7 @@ this.myFilterNodes = function(d)
 
 this.myFilterLinks= function(d)
 {
-     if( ! d.source.parentDataNode.doNotShow && ! d.target.parentDataNode.doNotShow)
+     if( d.source.parentDataNode.doNotShow == false && d.target.parentDataNode.doNotShow == false)
       		return true;
       	
       return false;
@@ -1219,6 +1219,8 @@ this.update = function()
 		
 		var filteredNodes = thisContext.getDisplayDataset().nodes.filter(thisContext.myFilterNodes)
 		
+		console.log("Got " + filteredNodes.length + " to show");
+		
 		vis.selectAll("text").remove();
 		
 		//console.log(filteredNodes);
@@ -1239,7 +1241,6 @@ this.update = function()
  			force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
  	 }
  	 
-      	
 	  var node = vis.selectAll("circle.node")
 	      .data(filteredNodes, function(d) {return d.name; } )
 	      .style("fill", function(d) { return d.parentDataNode.thisNodeColor} )
@@ -1847,15 +1848,12 @@ this.hideAndShow = function(d)
 		d=statics.getHighlightedNode();
 	
 	if( ! d)
-		return;
+		d = statics.getRoot();
 	
 	statics.setHighlightReverse( ! statics.getHighlightReverse() );
 	
 	if( statics.getHighlightReverse() == false)
 	{
-		for( var x =0; x < nodes.length; x++)
-			nodes[x].doNotShow=false;
-		
 		this.showOnlyMarked(false);
 	}
 	else
@@ -1866,6 +1864,21 @@ this.hideAndShow = function(d)
 		thisContext.highlightAllChildren(d);
 		thisContext.highlightAllParents(d);
 	}
+	
+	var show=0;
+	var hide=0;
+	
+	for( var x =0; x < nodes.length; x++)
+	{
+		if(nodes[x].doNotShow==true)
+			hide++;
+		else
+			show++;
+
+	}
+	
+	console.log(show + " " + hide);
+		
 }
 
 
