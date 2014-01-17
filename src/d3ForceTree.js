@@ -285,29 +285,11 @@ this.reforce = function()
     .linkDistance(function(d) { return d.target._children ? 80 * (d.nodeDepth-16)/16 : 30; })
     .size([w, h - 60]).gravity(aDocument.getElementById("gravitySlider").value/100)
     
-    function keepDragSteady(d)
-    {
-    	if( ! animationOn)
-    	{
-    		var displayNodes = thisContext.getDisplayDataset().nodes;
-        	
-        	for (var x=0;x < displayNodes; x++)
-        	{
-        		if( ! displayNodes[x].userMoved && displayNodes[x] != d)
-        		{
-        			displayNodes[x].x = displayNodes[x].parentDataNode.xMap[thisID];
-        			displayNodes[x].y= displayNodes[x].parentDataNode.yMap[thisID];
-        		}
-        	}
-    	}
-    }
-    
     drag = force.drag().on("dragstart", function(d) 
     { 
     	d.fixed =true;    	
     	d.userMoved = true;
     	dragging =true;
-    	keepDragSteady(d)
     	force.start();
     	
 	});
@@ -315,18 +297,15 @@ this.reforce = function()
     drag = force.drag().on("drag", function(d) 
     { 
     	dragging =true;
-    	keepDragSteady(d);
-    	force.start();
-    	
+    	force.start();	
     });
     
     drag = force.drag().on("dragend", function(d) 
     { 
     	d.fixed=true;
     	d.userMoved = true;    	
-    	keepDragSteady(d);
-    	force.start();
-    	stopOnChild = true;
+    	d.parentDataNode.xMap[thisID] = d.x;
+    	d.parentDataNode.yMap[thisID] = d.y;
     });
 
 
