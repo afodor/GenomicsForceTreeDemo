@@ -449,6 +449,10 @@ this.reVisOne = function()
 	
 	this.setWidthAndHeight();
 	this.setInitialPositions();
+	vis.selectAll("text").remove()
+	vis.selectAll("circle.node").remove();
+	vis.selectAll("line.link").remove();
+	vis.selectAll("line").remove();
 	vis.remove();
 	this.reforce();
 	dirty=true;
