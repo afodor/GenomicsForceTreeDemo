@@ -1606,25 +1606,7 @@ this.myMouseLeave= function ()
 
 this.setInitialPositions = function ()
 {
-	var root = statics.getRoot();
-	
-	root.xMap[thisID] =  w / 2.0  + 20;
-	root.yMap[thisID] = h /2.0;
-	
-	var radius = Math.min(w,h)/2;
-	
-	radius = radius - radius * aDocument.getElementById("gravitySlider").value/100;
-		
-	var piTwice= 2* Math.PI ;
-	
-	for( var x=0; x < nodes.length; x++) 
-	{
-		var aRad = (parseFloat(nodes[x].nodeDepth)-1)/(statics.getMaxLevel()) * radius;
-		nodes[x].xMap[thisID]  = root.xMap[thisID]- aRad * Math.cos( piTwice * x/nodes.length) ;
-		nodes[x].yMap[thisID]  = aRad * Math.sin( piTwice * x/nodes.length) + root.yMap[thisID];
-	}
-	
-	root.fixed=true;
+	this.arrangeForcePlot(false);
 }
 
 this.arrangeForcePlot = function(arrangeChildren)
