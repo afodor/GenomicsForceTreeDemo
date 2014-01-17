@@ -147,7 +147,6 @@ var dataNames = [];
 var lastSelected = null;
 var animationOn=false;
 
-var stopOnGrandChild = false;
 var stopOnChild = false;
 var displayDataset= null; 
 
@@ -294,7 +293,8 @@ this.reforce = function()
     		d.fixed=true; 
     		d.userMoved = true;
 		}
-
+    	
+		thisContext.stopOnChild = true;
 	} });
     
     
@@ -1232,8 +1232,8 @@ this.update = function()
  			force.links(links)  
  		}
  		
-
-		force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
+ 		if(thisContext.stopOnChild == true || thisContext.animationOn == true)
+ 			force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
  	 }
  	 
       	
@@ -1262,40 +1262,30 @@ this.update = function()
 	      	
 	      function updateNodesLinksText()
 	      {
-	    	  console.log("in update " + thisContext.getDisplayDataset().nodes[0].x 
-	    			  	+ " "+thisContext.getDisplayDataset().nodes[0].fixed +  " " 
-	    			  	+ thisContext.getDisplayDataset().nodes[0].name);
-	    	  if( stopOnGrandChild)
-	    	  {
-	    		  stopOnChild = true;
-	    		  stopOnGrandChild = false;
-	    	  } else if (stopOnChild)
-	    	  {
-	    		  if( force && !animationOn )
+	    	  console.log("In update " + thisContext.getDisplayDataset().nodes[4].fixed)
+	    	  
+	    	  if( thisContext.stopOnChild == true)
+		  		{
+		  			var dataset = thisContext.getDisplayDataset();
+		  			
+		  			for( var x=0; x < dataset.nodes.length; x++)
+		  			{
+		  				dataset.nodes[x].x = dataset.nodes[x].parentDataNode.xMap[thisID]
+		  				dataset.nodes[x].y = dataset.nodes[x].parentDataNode.yMap[thisID]
+		  				
+		  				if( thisContext.animationOn == false)
+		  					dataset.nodes[x].fixed = true;
+		  			}
+		  			
+		  		  if( force && thisContext.animationOn == false)
 	    			  force.stop();
 	    		  
-	    		  stopOnChild=false;
-	    	  }
-	    	  
-	  		if( stopOnChild)
-	  		{
-	  			var dataset = thisContext.getDisplayDataset();
-	  			
-	  			for( var x=0; x < dataset.nodes.length; x++)
-	  			{
-	  				dataset.nodes[x].x = dataset.nodes[x].parentDataNode.xMap[thisID]
-	  				dataset.nodes[x].y = dataset.nodes[x].parentDataNode.yMap[thisID]
-	  			}
-	  		}
-	  		
-	    	  	    
+	    		  thisContext.stopOnChild=false;
+
+		  		}
+		  		
 	    	 node.attr("cx", 
 					function (d){ 
-	    		 			if( d.parentDataNode == statics.getRoot() )
-	    		 			{ 
-	    		 				console.log("In cx " +thisContext.getAVal( d,true) + " " + d.name + " " + d.x + " " +
-	    		 						thisContext.getDisplayDataset().nodes[0].x)
-	    		 			} 
 	    		 				
 	    		 				return thisContext.getAVal( d,true)
 	    		 			}
@@ -1303,11 +1293,6 @@ this.update = function()
 	      	.attr("cy", 
 	      			
 					function (d){
-	      					if(d.fixMeNextTime)
-	      					{
-	      						d.fixed=true;
-	      						d.fixMeNextTime=false;
-	      					}
 	      						
 	      					return thisContext.getAVal( d,false)}
 				)
@@ -1497,15 +1482,16 @@ this.releaseAllFixed = function()
 		if( ! displayNodes[x].userMoved)
 		{
 			displayNodes[x].fixed = false;
-			displayNodes[x].fixMeNextTime=false;
 			displayNodes[x].x = displayNodes[x].parentDataNode.xMap[thisID];
 			displayNodes[x].y= displayNodes[x].parentDataNode.yMap[thisID];
 		}
 	}
 	
-	animationOn=true;
-	stopOnGrandChild = true;
-	stopOnChild = false;
+	thisContext.stopOnChild = true;
+	thisContext.animationOn=true;
+	
+	if(force)
+		force.start();
 	
 	this.redrawScreen();
 }
@@ -1526,6 +1512,8 @@ this.getTextColor= function(d)
 
 this.myMouseEnter = function(d)
 {
+	if( force && thisContext.animationOn == false)
+		force.stop();
 	
 	if (! aDocument.getElementById("mouseOverHighlights").checked)
 		return;
@@ -1558,7 +1546,7 @@ this.myMouseEnter = function(d)
 					&& prop != "yMapNoise" && prop != "highlight" && prop != "nodeLabelText" &&
 						prop != "setVisible" && prop != "thisNodeRadius" && prop != "thisNodeColor" &&
 						prop != "marked" && prop != "doNotShow" && prop != "listPosition" && prop != "px" &&
-						prop != "py" && prop != "weight" && prop != "aParentNode" && prop != "fixMeNextTime" )
+						prop != "py" && prop != "weight" && prop != "aParentNode" )
 		{
 			var aVal = "" + d[prop];
 			
@@ -1577,6 +1565,9 @@ this.myMouseEnter = function(d)
 
 this.myMouseLeave= function ()
 {
+	if( force && thisContext.animationOn == false)
+		force.stop();
+	
 	if (! aDocument.getElementById("mouseOverHighlights").checked)
 		return;
 	
@@ -1620,7 +1611,6 @@ this.arrangeForcePlot = function(arrangeChildren)
 	for( var x=0; x < displayNodes.length; x++)
 	{
 		displayNodes[x].fixed =false;
-		displayNodes[x].fixMeNextTime = true;
 		
 		if(  arrangeChildren &&  lastSelected == displayNodes[x].parentDataNode )
 		{
@@ -1669,8 +1659,6 @@ this.arrangeForcePlot = function(arrangeChildren)
 	{
 		if( nodesToRun[x].doNotShow==false)
 			numVisibleArray[nodesToRun[x].nodeDepth] = numVisibleArray[nodesToRun[x].nodeDepth]+ 1;
-		
-		nodesToRun[x].fixMeNextTime=false;
 	}
 	
 	var root = lastSelected;
@@ -1713,15 +1701,8 @@ this.arrangeForcePlot = function(arrangeChildren)
 		numAssignedArray[nodesToRun[x].nodeDepth] = numAssignedArray[nodesToRun[x].nodeDepth]+ 1;
 	}
 	
-
-	animationOn = false;
-	stopOnGrandChild = true;
-	stopOnChild = false;
-
-	if( force ) 
-	{
-		force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
-	}
+	thisContext.animationOn = false;
+	thisContext.stopOnChild = true;
 	
 }
 
