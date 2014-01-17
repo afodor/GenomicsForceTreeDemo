@@ -311,6 +311,10 @@ this.reforce = function()
 	    	d.parentDataNode.xMap[thisID] = d.x;
 	    	d.parentDataNode.yMap[thisID] = d.y;
 	    });
+	    
+	    force.start();
+	    
+	    stopOnChild = true;
 
 	}
 	
