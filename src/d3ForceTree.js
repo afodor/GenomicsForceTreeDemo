@@ -1251,6 +1251,12 @@ this.update = function()
  			links = d3.layout.tree().links(filteredNodes);
  			force.links(links)  
  		}
+ 		else
+ 		{
+ 			links = d3.layout.tree().links([]);
+ 			force.links(links);
+ 		}
+ 		
  		
  		if(stopOnChild == true || animationOn == true)
  			force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
