@@ -845,7 +845,7 @@ this.getLabelText = function(d)
 
 this.myFilterNodes = function(d)
 {
-	 if( ! d.parentDataNode.setVisible  )
+	 if( ! d.parentDataNode.doNotShow)
 	 	return true;
 	 	
 	 return false;
@@ -853,7 +853,7 @@ this.myFilterNodes = function(d)
 
 this.myFilterLinks= function(d)
 {
-     if( d.source.parentDataNode.setVisible  && d.target.parentDataNode.setVisible)
+     if( ! d.source.parentDataNode.doNotShow && ! d.target.parentDataNode.doNotShow)
       		return true;
       	
       return false;
@@ -1217,16 +1217,8 @@ this.update = function()
 	 		nodes[i].thisNodeRadius = this.getRadiusVal(nodes[i]);
 	 	}	
 		
-		for( var z=0; z < nodes.length; z++)
-			nodes[z].setVisible=false;
-		
-		
-		
 		var filteredNodes = thisContext.getDisplayDataset().nodes.filter(thisContext.myFilterNodes)
 		
-		for( var z=0; z < filteredNodes .length; z++)
-			filteredNodes[z].setVisible=true;
-
 		vis.selectAll("text").remove();
 		
 		//console.log(filteredNodes);
@@ -1559,7 +1551,7 @@ this.myMouseEnter = function(d)
 					&& prop != "yMap" 
 					&& prop != "xMapNoise"
 					&& prop != "yMapNoise" && prop != "highlight" && prop != "nodeLabelText" &&
-						prop != "setVisible" && prop != "thisNodeRadius" && prop != "thisNodeColor" &&
+						prop != "thisNodeRadius" && prop != "thisNodeColor" &&
 						prop != "marked" && prop != "doNotShow" && prop != "listPosition" && prop != "px" &&
 						prop != "py" && prop != "weight" && prop != "aParentNode" )
 		{
