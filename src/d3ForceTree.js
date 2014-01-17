@@ -444,15 +444,14 @@ this.reVis = function(revisAll)
 
 }
 
-this.reVisOne = function() 
+this.reVisOne = function(resetPositions) 
 {
 	
 	this.setWidthAndHeight();
-	this.setInitialPositions();
-	vis.selectAll("text").remove()
-	vis.selectAll("circle.node").remove();
-	vis.selectAll("line.link").remove();
-	vis.selectAll("line").remove();
+	
+	if( graphType != "ForceTree"  )
+		this.setInitialPositions();
+	
 	vis.remove();
 	this.reforce();
 	dirty=true;
@@ -1239,8 +1238,6 @@ this.update = function()
 		
 		var filteredNodes = thisContext.getDisplayDataset().nodes.filter(thisContext.myFilterNodes)
 		
-		console.log("Got " + filteredNodes.length + " to show");
-		
 		vis.selectAll("text").remove();
 		
 		//console.log(filteredNodes);
@@ -1910,22 +1907,7 @@ this.hideAndShow = function(d)
 	
 		thisContext.highlightAllChildren(d);
 		thisContext.highlightAllParents(d);
-	}
-	
-	var show=0;
-	var hide=0;
-	
-	for( var x =0; x < nodes.length; x++)
-	{
-		if(nodes[x].doNotShow==true)
-			hide++;
-		else
-			show++;
-
-	}
-	
-	console.log(show + " " + hide);
-		
+	}	
 }
 
 
