@@ -853,10 +853,10 @@ this.myFilterNodes = function(d)
 
 this.myFilterLinks= function(d)
 {
-     if( d.source.parentDataNode.doNotShow == false && d.target.parentDataNode.doNotShow == false)
-      		return true;
+	 if( d.source.parentDataNode.doNotShow == true|| d.target.parentDataNode.doNotShow == true)
+      		return false;
       	
-      return false;
+      return true;
       		
 }
 
@@ -1415,13 +1415,19 @@ this.update = function()
 		
 		//force.on("end", updateNodesLinksText);
 	    
-	    // Update the links
-	      	if( graphType == "ForceTree" && ! aDocument.getElementById("hideLinks").checked )
-  		link = vis.selectAll("line.link")
-      .data(links);  //.filter(this.myFilterLinks), function(d) {  return d.target.name; }
-      		//);
+	    // Update the links	      	
+		if( graphType == "ForceTree" && ! aDocument.getElementById("hideLinks").checked )
+		{
+			link = vis.selectAll("line.link")
+	        .data(links.filter(this.myFilterLinks), function(d) {  return d.target.name; }
+	        		);
+		}
+		
+  		
+//);
 	   
 	  // Enter any new links.
+		//vis.remove("svg:line");
 	  if( graphType == "ForceTree" && ! aDocument.getElementById("hideLinks").checked )
 	  link.enter().insert("svg:line", ".node")
 	      .attr("class", "link")
