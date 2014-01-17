@@ -1135,6 +1135,21 @@ this.update = function()
  	
 	if( dirty ) 
 	{
+		if( animationOn == false && stopOnChild == false)
+		{
+			dataset = thisContext.getDisplayDataset();
+			for( var x=0; x < dataset.nodes.length; x++)
+			{
+				if( ! dataset.nodes[x].userMoved )
+				{
+					dataset.nodes[x].x = dataset.nodes[x].parentDataNode.xMap[thisID]
+					dataset.nodes[x].y = dataset.nodes[x].parentDataNode.yMap[thisID]			  				
+				}
+			}
+		}
+		
+			
+		
 		dirty = false;
 		var anyLabels = false;
 		
@@ -1983,6 +1998,5 @@ else
 {
 	thisContext.initialize();  // data is already loaded - ok to initialize.
 }
-
 
 }
