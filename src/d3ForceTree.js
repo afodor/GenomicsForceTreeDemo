@@ -150,6 +150,7 @@ var animationOn=false;
 var stopOnChild = false;
 var displayDataset= null; 
 var dragging =false;
+var lastArranged = null;
 
 
 this.addNoise = function()
@@ -1635,11 +1636,30 @@ this.myMouseLeave= function ()
 
 this.setInitialPositions = function ()
 {
-	this.arrangeForcePlot(false);
+	if( animationOn == false)
+		this.arrangeForcePlot(false);
 }
 
-this.arrangeForcePlot = function(arrangeChildren)
+this.arrangeForcePlot = function(arrangeChildren,lastArrangedParameter)
 {
+	if( ! arrangeChildren)
+		lastArranged = null;
+
+	if( arrangeChildren && lastSelected)
+		lastArranged = lastSelected;
+		
+	var topNode = statics.getRoot();
+	
+	if( lastArrangedParameter )
+	{
+		arrangeChildren = true;
+		topNode = lastArrangedParameter;
+	}
+	else if( arrangeChildren && lastSelected)
+	{
+		topNode = lastSelected;
+	}
+
 	var displayNodes = this.getDisplayDataset().nodes;
 	
 	for( var x=0; x < displayNodes.length; x++)
@@ -1649,7 +1669,7 @@ this.arrangeForcePlot = function(arrangeChildren)
 		if( arrangeChildren == false)
 			displayNodes[x].userMoved=false
 		
-		if(  arrangeChildren &&  lastSelected == displayNodes[x].parentDataNode )
+		if(  arrangeChildren &&  topNode == displayNodes[x].parentDataNode )
 		{
 			displayNodes[x].fixed=true;
 			displayNodes[x].userMoved = true;
@@ -1667,7 +1687,7 @@ this.arrangeForcePlot = function(arrangeChildren)
 	
 	var localMaxLevel = statics.getMaxLevel()
 	
-	if( arrangeChildren && lastSelected )
+	if( topNode != statics.getRoot())
 	{
 		localMaxLevel =0;
 	}
@@ -1698,15 +1718,12 @@ this.arrangeForcePlot = function(arrangeChildren)
 			numVisibleArray[nodesToRun[x].nodeDepth] = numVisibleArray[nodesToRun[x].nodeDepth]+ 1;
 	}
 	
-	var root = lastSelected;
-	
 	// if we are not arranging to a child node
 	// the root is at the top of the tree in the center of the screen
-	if( ! root || ! arrangeChildren)
+	if( topNode == statics.getRoot())
 	{
-		root = statics.getRoot();
-		root.xMap[thisID] =  w / 2.0  + 20.0;
-		root.yMap[thisID] = h /2.0;
+		topNode.xMap[thisID] =  w / 2.0  + 20.0;
+		topNode.yMap[thisID] = h /2.0;
 	}
 	
 	var radius = parseFloat( Math.min(w,h))/2.0;
@@ -1718,7 +1735,7 @@ this.arrangeForcePlot = function(arrangeChildren)
 	if(  arrangeChildren &&  lastSelected)
 	{
 		radius = radius / aDocument.getElementById("localGravity").value;
-		localMinLevel = lastSelected.nodeDepth;
+		localMinLevel = topNode.nodeDepth;
 	}
 	
 	localMinLevel = parseFloat(localMinLevel);
@@ -1732,9 +1749,9 @@ this.arrangeForcePlot = function(arrangeChildren)
 				/numVisibleArray[nodesToRun[x].nodeDepth];
 		
 		var aRad = (parseFloat(nodesToRun[x].nodeDepth)- localMinLevel)/range * radius;
-		nodesToRun[x].xMap[thisID] = root.xMap[thisID]- 
+		nodesToRun[x].xMap[thisID] = topNode.xMap[thisID]- 
 			aRad * Math.cos( piTwice * aPosition) ;
-		nodesToRun[x].yMap[thisID]  = aRad * Math.sin( piTwice *  aPosition) + root.yMap[thisID];
+		nodesToRun[x].yMap[thisID]  = aRad * Math.sin( piTwice *  aPosition) + topNode.yMap[thisID];
 		numAssignedArray[nodesToRun[x].nodeDepth] = numAssignedArray[nodesToRun[x].nodeDepth]+ 1;
 	}
 	
