@@ -1271,12 +1271,23 @@ this.update = function()
 	     .on("mouseenter", this.myMouseEnter)
 	      .on("mouseleave", this.myMouseLeave)
 	      
+	       node.attr("cx", 
+					function (d){ 
+	    		 				
+	    		 				return thisContext.getAVal( d,true)
+	    		 			}
+	    		 		)
+	      	.attr("cy", 
+	      			
+					function (d){
+	      						
+	      					return thisContext.getAVal( d,false)}
+				)
+	    
+	      
 	      if( graphType == "ForceTree"  )
 	      {
-	      		// sometimes in d3 the parentNode was getting set to null
-	      		// this is an attempt to not let that happen.
 	      		node.call(force.drag);
-	      		node.attr("parentNode", vis);
 	      }
 	      	
 	      function updateNodesLinksText()
@@ -1393,6 +1404,12 @@ this.update = function()
 		          addNodeAndChildren(statics.getRoot());
 		    		  
 			}
+	    else if(graphType != "ForceTree" )
+	    {
+	    	 vis.selectAll("line").remove();
+	    }
+	      
+	      
 		
 		force.on("tick", updateNodesLinksText);
 		
