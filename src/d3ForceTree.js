@@ -287,12 +287,21 @@ this.reforce = function()
     
     drag = force.drag().on("dragstart", function(d) 
     { 
-    	d.fixed =false;
+    	d.fixed =true;
     	if( graphType ==  "ForceTree" )
     	{
     		if( animationOn == false)
     		{
     			dragging= true;
+    			
+    			var dNodes = getDisplayDataset();
+    			for( var x=0; x < dNodes.length; x++ )
+    			{
+    				dNodes[x].fixed = true;
+    				dNodes[x].oldX = dNodes[x].x;
+    				dNodes[x].oldY = dNodes[x].y;
+    			}
+    			
     			force.start();
     		}
     	}
@@ -300,7 +309,20 @@ this.reforce = function()
     
     drag = force.drag().on("drag", function(d) 
     { 
-    	
+
+		if( animationOn == false)
+		{
+			dragging= true;
+			
+			var dNodes = getDisplayDataset();
+			for( var x=0; x < dNodes.length; x++ )
+			{
+				dNodes[x].x = dNodes[x].oldX;
+				dNodes[x].y= dNodes[x].oldY;
+			}
+			
+			force.start();
+		}
     });
     
     drag = force.drag().on("dragend", function(d) 
@@ -310,7 +332,18 @@ this.reforce = function()
     	if( graphType ==  "ForceTree" )
     	{
 			dragging = false;
+			
+			var dNodes = getDisplayDataset();
+			for( var x=0; x < dNodes.length; x++ )
+			{
+				dNodes[x].x = dNodes[x].oldX;
+				dNodes[x].y= dNodes[x].oldY;
+			}
+
     	}
+    	
+    	force.start();
+    	stopOnChild = true;
     }
     	
     );
