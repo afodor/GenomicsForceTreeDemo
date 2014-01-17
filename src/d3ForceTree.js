@@ -149,7 +149,7 @@ var animationOn=false;
 
 var stopOnGrandChild = false;
 var stopOnChild = false;
-var displayDasaset= null; 
+var displayDataset= null; 
 
 
 
@@ -329,10 +329,10 @@ this.zoom = function() {
 
 this.getDisplayDataset = function()
 {
-	if(  displayDasaset)
-		return displayDasaset;
-
-	displayDasaset = { nodes : [] }; 
+	if(  displayDataset)
+		return displayDataset;
+	
+	displayDataset= { nodes : [] }; 
 	
 	var index =0;
 	
@@ -340,10 +340,10 @@ this.getDisplayDataset = function()
 	{
 		var newChildNode = aNode.children[childIndex];
 		var newDisplayNode= {};
-		newDisplayNode.name = index;
+		newDisplayNode.name = "NAME_" + index;
 		index++;
 		newDisplayNode.fixed = true;
-		displayDasaset.nodes.push(newDisplayNode);
+		displayDataset.nodes.push(newDisplayNode);
 		newDisplayNode.parentDataNode = newChildNode;
 		
 		if( newChildNode.children)
@@ -359,17 +359,17 @@ this.getDisplayDataset = function()
 	}
 	
 	var rootDisplayNode = {};
-	rootDisplayNode.name = index;
+	rootDisplayNode.name = "NAME_" +  index;
 	index++;
 	rootDisplayNode.fixed= false;
-	displayDasaset.nodes.push(rootDisplayNode);
+	displayDataset.nodes.push(rootDisplayNode);
 	rootDisplayNode.parentDataNode = statics.getRoot();
 	rootDisplayNode.children = [];
 	
 	for( var x=0; x < statics.getRoot().children.length; x++)
 		rootDisplayNode.children.push( addAndReturnChild(statics.getRoot(), x) );
 	
-	return displayDasaset;
+	return displayDataset;
 	
 }
 
@@ -1262,7 +1262,9 @@ this.update = function()
 	      	
 	      function updateNodesLinksText()
 	      {
-	    	  console.log("in update " + thisContext.getDisplayDataset().nodes[0].x + " "+thisContext.getDisplayDataset().nodes[0].fixed);
+	    	  console.log("in update " + thisContext.getDisplayDataset().nodes[0].x 
+	    			  	+ " "+thisContext.getDisplayDataset().nodes[0].fixed +  " " 
+	    			  	+ thisContext.getDisplayDataset().nodes[0].name);
 	    	  if( stopOnGrandChild)
 	    	  {
 	    		  stopOnChild = true;
@@ -1271,6 +1273,8 @@ this.update = function()
 	    	  {
 	    		  if( force && !animationOn )
 	    			  force.stop();
+	    		  
+	    		  stopOnChild=false;
 	    	  }
 	    	  
 	  		if( stopOnChild)
@@ -1289,8 +1293,10 @@ this.update = function()
 					function (d){ 
 	    		 			if( d.parentDataNode == statics.getRoot() )
 	    		 			{ 
-	    		 				console.log("In cx " +thisContext.getAVal( d,true))
+	    		 				console.log("In cx " +thisContext.getAVal( d,true) + " " + d.name + " " + d.x + " " +
+	    		 						thisContext.getDisplayDataset().nodes[0].x)
 	    		 			} 
+	    		 				
 	    		 				return thisContext.getAVal( d,true)
 	    		 			}
 	    		 		)
