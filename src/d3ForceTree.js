@@ -285,68 +285,49 @@ this.reforce = function()
     .linkDistance(function(d) { return d.target._children ? 80 * (d.nodeDepth-16)/16 : 30; })
     .size([w, h - 60]).gravity(aDocument.getElementById("gravitySlider").value/100)
     
+    function keepDragSteady(d)
+    {
+    	if( ! animationOn)
+    	{
+    		var displayNodes = thisContext.getDisplayDataset().nodes;
+        	
+        	for (var x=0;x < displayNodes; x++)
+        	{
+        		if( ! displayNodes[x].userMoved && displayNodes[x] != d)
+        		{
+        			displayNodes[x].x = displayNodes[x].parentDataNode.xMap[thisID];
+        			displayNodes[x].y= displayNodes[x].parentDataNode.yMap[thisID];
+        		}
+        	}
+    	}
+    }
+    
     drag = force.drag().on("dragstart", function(d) 
     { 
-    	d.fixed =true;
-    	if( graphType ==  "ForceTree" )
-    	{
-    		if( animationOn == false)
-    		{
-    			dragging= true;
-    			
-    			var dNodes = getDisplayDataset();
-    			for( var x=0; x < dNodes.length; x++ )
-    			{
-    				dNodes[x].fixed = true;
-    				dNodes[x].oldX = dNodes[x].x;
-    				dNodes[x].oldY = dNodes[x].y;
-    			}
-    			
-    			force.start();
-    		}
-    	}
+    	d.fixed =true;    	
+    	d.userMoved = true;
+    	dragging =true;
+    	keepDragSteady(d)
+    	force.start();
+    	
 	});
     
     drag = force.drag().on("drag", function(d) 
     { 
-
-		if( animationOn == false)
-		{
-			dragging= true;
-			
-			var dNodes = getDisplayDataset();
-			for( var x=0; x < dNodes.length; x++ )
-			{
-				dNodes[x].x = dNodes[x].oldX;
-				dNodes[x].y= dNodes[x].oldY;
-			}
-			
-			force.start();
-		}
+    	dragging =true;
+    	keepDragSteady(d);
+    	force.start();
+    	
     });
     
     drag = force.drag().on("dragend", function(d) 
     { 
     	d.fixed=true;
-    	d.userMoved = true;
-    	if( graphType ==  "ForceTree" )
-    	{
-			dragging = false;
-			
-			var dNodes = getDisplayDataset();
-			for( var x=0; x < dNodes.length; x++ )
-			{
-				dNodes[x].x = dNodes[x].oldX;
-				dNodes[x].y= dNodes[x].oldY;
-			}
-
-    	}
-    	
+    	d.userMoved = true;    	
+    	keepDragSteady(d);
     	force.start();
     	stopOnChild = true;
-    }
-    	
-    );
+    });
 
 
     if( graphType != "ForceTree")
@@ -1313,16 +1294,19 @@ this.update = function()
 	      	
 	      function updateNodesLinksText()
 	      {
-	    	  console.log("tick " + dragging);
+	    	  //console.log("tick " + dragging);
 	    	  
-	    	  if( stopOnChild == true)
+	    	  if( ! animationOn && ( stopOnChild == true || dragging == true))
 		  		{
 		  			var dataset = thisContext.getDisplayDataset();
 		  			
 		  			for( var x=0; x < dataset.nodes.length; x++)
 		  			{
-		  				dataset.nodes[x].x = dataset.nodes[x].parentDataNode.xMap[thisID]
-		  				dataset.nodes[x].y = dataset.nodes[x].parentDataNode.yMap[thisID]
+		  				if( ! dataset.nodes[x].userMoved )
+		  				{
+			  				dataset.nodes[x].x = dataset.nodes[x].parentDataNode.xMap[thisID]
+			  				dataset.nodes[x].y = dataset.nodes[x].parentDataNode.yMap[thisID]			  				
+		  				}
 		  				
 		  				if( animationOn == false)
 		  					dataset.nodes[x].fixed = true;
@@ -1331,7 +1315,8 @@ this.update = function()
 		  		  if( force && animationOn == false  && dragging == false)
 	    			  force.stop();
 	    		  
-	    		  stopOnChild=false;
+		  		  if( stopOnChild == true)
+		  			  stopOnChild=false;
 
 		  		}
 		  		
