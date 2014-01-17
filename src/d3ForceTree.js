@@ -1627,6 +1627,9 @@ this.arrangeForcePlot = function(arrangeChildren)
 	{
 		displayNodes[x].fixed =false;
 		
+		if( arrangeChildren == false)
+			displayNodes[x].userMoved=false
+		
 		if(  arrangeChildren &&  lastSelected == displayNodes[x].parentDataNode )
 		{
 			displayNodes[x].fixed=true;
