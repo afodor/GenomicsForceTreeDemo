@@ -281,43 +281,48 @@ this.reforce = function()
 
 	this.setWidthAndHeight();
 	
-    force = d3.layout.force()
-    .charge(function(d) { return d._children ? -d.numSeqs / 100 : -30; })
-    .linkDistance(function(d) { return d.target._children ? 80 * (d.nodeDepth-16)/16 : 30; })
-    .size([w, h - 60]).gravity(aDocument.getElementById("gravitySlider").value/100)
-    
-    drag = force.drag().on("dragstart", function(d) 
-    { 
-    	d.fixed =true;    	
-    	d.userMoved = true;
-    	dragging =true;
-    	force.start();
-    	
-	});
-    
-    drag = force.drag().on("drag", function(d) 
-    { 
-    	dragging =true;
-    	force.start();	
-    });
-    
-    drag = force.drag().on("dragend", function(d) 
-    { 
-    	d.fixed=true;
-    	d.userMoved = true;    	
-    	d.parentDataNode.xMap[thisID] = d.x;
-    	d.parentDataNode.yMap[thisID] = d.y;
-    });
+	if( graphType == "ForceTree")
+	{
 
+	    force = d3.layout.force()
+	    .charge(function(d) { return d._children ? -d.numSeqs / 100 : -30; })
+	    .linkDistance(function(d) { return d.target._children ? 80 * (d.nodeDepth-16)/16 : 30; })
+	    .size([w, h - 60]).gravity(aDocument.getElementById("gravitySlider").value/100)
+	    
+	    drag = force.drag().on("dragstart", function(d) 
+	    { 
+	    	d.fixed =true;    	
+	    	d.userMoved = true;
+	    	dragging =true;
+	    	force.start();
+	    	
+		});
+	    
+	    drag = force.drag().on("drag", function(d) 
+	    { 
+	    	dragging =true;
+	    	force.start();	
+	    });
+	    
+	    drag = force.drag().on("dragend", function(d) 
+	    { 
+	    	d.fixed=true;
+	    	d.userMoved = true;    	
+	    	d.parentDataNode.xMap[thisID] = d.x;
+	    	d.parentDataNode.yMap[thisID] = d.y;
+	    });
+
+	}
+	
 
     if( graphType != "ForceTree")
     {
     	vis = d3.select("body").append("svg:svg")
         .attr("width", w)
-        .attr("height", h)
-      .append("g")
-        .call(d3.behavior.zoom().scaleExtent([0.01, 100]).on("zoom", thisContext.zoom))
-      .append("g");
+        .attr("height", h);
+    	
+    	//.append("g").call(d3.behavior.zoom().scaleExtent([0.01, 100]).on("zoom", thisContext.zoom))
+      //.append("g");
     }
     else
     {
@@ -452,8 +457,16 @@ this.reVisOne = function(resetPositions)
 	if( graphType != "ForceTree"  )
 		this.setInitialPositions();
 	
+
+	if( graphType != "ForceTree"  )
+		vis.selectAll("g").remove();
+	
+	
 	vis.remove();
+	
+	
 	this.reforce();
+	
 	dirty=true;
     this.update();
 }
@@ -1418,8 +1431,8 @@ this.update = function()
 	    }
 	      
 	      
-		
-		force.on("tick", updateNodesLinksText);
+	    if( graphType == "ForceTree")
+	    	force.on("tick", updateNodesLinksText);
 		
 		//force.on("end", updateNodesLinksText);
 	    
