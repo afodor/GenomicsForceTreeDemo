@@ -149,7 +149,7 @@ var animationOn=false;
 
 var stopOnChild = false;
 var displayDataset= null; 
-
+var dragging =false;
 
 
 this.addNoise = function()
@@ -285,19 +285,37 @@ this.reforce = function()
     .linkDistance(function(d) { return d.target._children ? 80 * (d.nodeDepth-16)/16 : 30; })
     .size([w, h - 60]).gravity(aDocument.getElementById("gravitySlider").value/100)
     
+    drag = force.drag().on("dragstart", function(d) 
+    { 
+    	d.fixed =false;
+    	if( graphType ==  "ForceTree" )
+    	{
+    		if( animationOn == false)
+    		{
+    			dragging= true;
+    			force.start();
+    		}
+    	}
+	});
     
-    drag = force.drag().on("dragstart", function(d) { if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
-	{
-    	if( graphType ==  "ForceTree" )//  && thisDocument.getElementById("dragNodes").checked )
-		{
-    		d.fixed=true; 
-    		d.userMoved = true;
-		}
+    drag = force.drag().on("drag", function(d) 
+    { 
     	
-		thisContext.stopOnChild = true;
-	} });
+    });
     
-    
+    drag = force.drag().on("dragend", function(d) 
+    { 
+    	d.fixed=true;
+    	d.userMoved = true;
+    	if( graphType ==  "ForceTree" )
+    	{
+			dragging = false;
+    	}
+    }
+    	
+    );
+
+
     if( graphType != "ForceTree")
     {
     	vis = d3.select("body").append("svg:svg")
@@ -1232,7 +1250,7 @@ this.update = function()
  			force.links(links)  
  		}
  		
- 		if(thisContext.stopOnChild == true || thisContext.animationOn == true)
+ 		if(stopOnChild == true || animationOn == true)
  			force.start().gravity(aDocument.getElementById("gravitySlider").value/100);
  	 }
  	 
@@ -1262,9 +1280,9 @@ this.update = function()
 	      	
 	      function updateNodesLinksText()
 	      {
-	    	  console.log("In update " + thisContext.getDisplayDataset().nodes[4].fixed)
+	    	  console.log("tick " + dragging);
 	    	  
-	    	  if( thisContext.stopOnChild == true)
+	    	  if( stopOnChild == true)
 		  		{
 		  			var dataset = thisContext.getDisplayDataset();
 		  			
@@ -1273,14 +1291,14 @@ this.update = function()
 		  				dataset.nodes[x].x = dataset.nodes[x].parentDataNode.xMap[thisID]
 		  				dataset.nodes[x].y = dataset.nodes[x].parentDataNode.yMap[thisID]
 		  				
-		  				if( thisContext.animationOn == false)
+		  				if( animationOn == false)
 		  					dataset.nodes[x].fixed = true;
 		  			}
 		  			
-		  		  if( force && thisContext.animationOn == false)
+		  		  if( force && animationOn == false  && dragging == false)
 	    			  force.stop();
 	    		  
-	    		  thisContext.stopOnChild=false;
+	    		  stopOnChild=false;
 
 		  		}
 		  		
@@ -1487,8 +1505,8 @@ this.releaseAllFixed = function()
 		}
 	}
 	
-	thisContext.stopOnChild = true;
-	thisContext.animationOn=true;
+	stopOnChild = true;
+	animationOn=true;
 	
 	if(force)
 		force.start();
@@ -1512,7 +1530,7 @@ this.getTextColor= function(d)
 
 this.myMouseEnter = function(d)
 {
-	if( force && thisContext.animationOn == false)
+	if( force && animationOn == false && dragging == false)
 		force.stop();
 	
 	if (! aDocument.getElementById("mouseOverHighlights").checked)
@@ -1565,7 +1583,7 @@ this.myMouseEnter = function(d)
 
 this.myMouseLeave= function ()
 {
-	if( force && thisContext.animationOn == false)
+	if( force && animationOn == false && dragging == false)
 		force.stop();
 	
 	if (! aDocument.getElementById("mouseOverHighlights").checked)
@@ -1701,8 +1719,8 @@ this.arrangeForcePlot = function(arrangeChildren)
 		numAssignedArray[nodesToRun[x].nodeDepth] = numAssignedArray[nodesToRun[x].nodeDepth]+ 1;
 	}
 	
-	thisContext.animationOn = false;
-	thisContext.stopOnChild = true;
+	animationOn = false;
+	stopOnChild = true;
 	
 }
 
