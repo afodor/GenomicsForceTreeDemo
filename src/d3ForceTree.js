@@ -150,7 +150,6 @@ var animationOn=false;
 var stopOnChild = false;
 var displayDataset= null; 
 var dragging =false;
-var lastArranged = null;
 
 
 this.addNoise = function()
@@ -1656,22 +1655,11 @@ this.setInitialPositions = function ()
 		this.arrangeForcePlot(false);
 }
 
-this.arrangeForcePlot = function(arrangeChildren,lastArrangedParameter)
-{
-	if( ! arrangeChildren)
-		lastArranged = null;
-
-	if( arrangeChildren && lastSelected)
-		lastArranged = lastSelected;
-		
+this.arrangeForcePlot = function(arrangeChildren)
+{		
 	var topNode = statics.getRoot();
 	
-	if( lastArrangedParameter )
-	{
-		arrangeChildren = true;
-		topNode = lastArrangedParameter;
-	}
-	else if( arrangeChildren && lastSelected)
+	if( arrangeChildren && lastSelected)
 	{
 		topNode = lastSelected;
 	}
