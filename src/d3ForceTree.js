@@ -1613,9 +1613,6 @@ this.myMouseEnter = function(d)
 	someHTML += "</table>"
 		
 	infoPane.innerHTML = someHTML;
-	
-	dirty = true;
-	thisContext.redrawScreen();
 }
 
 this.myMouseLeave= function ()
@@ -1630,10 +1627,6 @@ this.myMouseLeave= function ()
 	{
 		statics.getHighlightedNode().highlight = false;			
 	}
-	
-		
-	dirty = true;
-	thisContext.redrawScreen();
 }
 
 this.setInitialPositions = function ()
