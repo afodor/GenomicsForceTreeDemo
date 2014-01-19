@@ -1238,9 +1238,7 @@ this.update = function()
 	 	}	
 		
 		var filteredNodes = thisContext.getDisplayDataset().nodes.filter(thisContext.myFilterNodes)
-		
-		console.log("Got " + filteredNodes.length + " to show");
-		
+				
 		vis.selectAll("text").remove();
 		
 		//console.log(filteredNodes);
@@ -1922,10 +1920,7 @@ this.hideAndShow = function(d)
 		else
 			show++;
 
-	}
-	
-	console.log(show + " " + hide);
-		
+	}	
 }
 
 
