@@ -1319,7 +1319,21 @@ this.update = function()
 	    	  
 	    	  if( ! animationOn && ( stopOnChild == true || dragging == true))
 		  		{
-	    		  if( force && animationOn == false  && dragging == false)
+		  			var dataset = thisContext.getDisplayDataset();
+		  			
+		  			for( var x=0; x < dataset.nodes.length; x++)
+		  			{
+		  				if( ! dataset.nodes[x].userMoved )
+		  				{
+			  				dataset.nodes[x].x = dataset.nodes[x].parentDataNode.xMap[thisID]
+			  				dataset.nodes[x].y = dataset.nodes[x].parentDataNode.yMap[thisID]			  				
+		  				}
+		  				
+		  				if( animationOn == false)
+		  					dataset.nodes[x].fixed = true;
+		  			}
+		  			
+		  		  if( force && animationOn == false  && dragging == false)
 	    			  force.stop();
 	    		  
 		  		  if( stopOnChild == true)
@@ -1613,6 +1627,9 @@ this.myMouseEnter = function(d)
 	someHTML += "</table>"
 		
 	infoPane.innerHTML = someHTML;
+	
+	dirty = true;
+	thisContext.redrawScreen();
 }
 
 this.myMouseLeave= function ()
@@ -1627,6 +1644,10 @@ this.myMouseLeave= function ()
 	{
 		statics.getHighlightedNode().highlight = false;			
 	}
+	
+		
+	dirty = true;
+	thisContext.redrawScreen();
 }
 
 this.setInitialPositions = function ()
