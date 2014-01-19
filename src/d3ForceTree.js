@@ -1922,17 +1922,6 @@ this.hideAndShow = function(d)
 	
 		thisContext.highlightAllChildren(d);
 		thisContext.highlightAllParents(d);
-	}
-	
-	var show=0;
-	var hide=0;
-	
-	for( var x =0; x < nodes.length; x++)
-	{
-		if(nodes[x].doNotShow==true)
-			hide++;
-		else
-			show++;
 	}	
 }
 
