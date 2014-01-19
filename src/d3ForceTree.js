@@ -1319,21 +1319,7 @@ this.update = function()
 	    	  
 	    	  if( ! animationOn && ( stopOnChild == true || dragging == true))
 		  		{
-		  			var dataset = thisContext.getDisplayDataset();
-		  			
-		  			for( var x=0; x < dataset.nodes.length; x++)
-		  			{
-		  				if( ! dataset.nodes[x].userMoved )
-		  				{
-			  				dataset.nodes[x].x = dataset.nodes[x].parentDataNode.xMap[thisID]
-			  				dataset.nodes[x].y = dataset.nodes[x].parentDataNode.yMap[thisID]			  				
-		  				}
-		  				
-		  				if( animationOn == false)
-		  					dataset.nodes[x].fixed = true;
-		  			}
-		  			
-		  		  if( force && animationOn == false  && dragging == false)
+	    		  if( force && animationOn == false  && dragging == false)
 	    			  force.stop();
 	    		  
 		  		  if( stopOnChild == true)
