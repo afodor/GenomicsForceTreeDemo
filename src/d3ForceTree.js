@@ -844,10 +844,7 @@ this.getLabelText = function(d)
 		}
 	}
 	
-	if(  aDocument.getElementById("cicleLabelScheme").checked  && graphType=="ForceTree" || 
-			((thisDocument.getElementById("scatterX").value == "circleX" || 
-					thisDocument.getElementById("scatterX").value == "circleY" ) || 
-					(thisDocument.getElementById("scatterY").value == "circleX" || thisDocument.getElementById("scatterY").value == "circleY" )))
+	if(  aDocument.getElementById("cicleLabelScheme").checked  && graphType=="ForceTree" )
 	{
 
 			if( circleDraws[d.nodeDepth] ==  returnString)	
